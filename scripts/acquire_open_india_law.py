@@ -6,9 +6,11 @@ import hashlib
 import argparse
 import tempfile
 import pandas as pd
+import fsspec
+import pyarrow.parquet as pq
 from pathlib import Path
 from dotenv import load_dotenv
-from huggingface_hub import HfApi, hf_hub_download
+from huggingface_hub import HfApi
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -30,7 +32,6 @@ SCOPES = ['https://www.googleapis.com/auth/drive']
 
 def get_hf_token():
     """Retrieve HF Token from environment."""
-    # Strip any potential whitespace/quotes
     token = os.getenv("HF_TOKEN")
     if token:
          token = token.strip().replace("'", "").replace('"', '')
@@ -61,7 +62,6 @@ def authenticate_google_drive():
                 sys.exit(1)
             print("Running Google Drive Desktop Authentication Flow...")
             flow = InstalledAppFlow.from_client_secrets_file(str(CREDENTIALS_PATH), SCOPES)
-            # Run local server to capture authorization code
             creds = flow.run_local_server(port=0)
             
         # Save token
@@ -117,12 +117,10 @@ class GoogleDriveManager:
     def init_folder_structure(self):
         """Initializes the complete dataset acquisition directory structure on Drive."""
         folders = {}
-        # Level 1
         raw_filtered_id = self.get_or_create_subfolder("01_raw_filtered", self.root_id)
         metadata_id = self.get_or_create_subfolder("03_metadata", self.root_id)
         reports_id = self.get_or_create_subfolder("04_reports", self.root_id)
         
-        # Level 2
         folders["legislation"] = self.get_or_create_subfolder("legislation", raw_filtered_id)
         folders["judgments"] = self.get_or_create_subfolder("judgments", raw_filtered_id)
         folders["metadata"] = metadata_id
@@ -136,7 +134,6 @@ class GoogleDriveManager:
         if not parent_id:
             raise ValueError(f"Invalid folder key: {folder_key}")
             
-        # Check if already exists
         q = f"name = '{file_name}' and '{parent_id}' in parents and trashed = false"
         results = self.service.files().list(q=q, fields="files(id)").execute()
         files = results.get('files', [])
@@ -144,7 +141,6 @@ class GoogleDriveManager:
         if files:
             file_id = files[0]['id']
             print(f"File '{file_name}' already exists in folder '{folder_key}' (ID: {file_id}). Overwriting...")
-            # Perform update instead of create to avoid cluttering Drive
             media = MediaFileUpload(str(local_path), mimetype=mime_type, resumable=True)
             self.service.files().update(fileId=file_id, media_body=media).execute()
             return file_id
@@ -178,92 +174,100 @@ def classify_text(text, domain_keywords):
                 return domain
     return None
 
-def process_and_filter_file(local_parquet_path, filename, domain_keywords, dry_run=False, limit_rows=None):
-    """Loads Parquet file, applies domain filtering, and cleans duplicates."""
-    df = pd.read_parquet(local_parquet_path)
-    original_row_count = len(df)
-    print(f"Loaded {original_row_count} rows from {filename}")
+def process_and_filter_remote_file(fs, filename, domain_keywords, dry_run=False, limit_rows=None):
+    """Streams a remote Parquet file from HuggingFace incrementally and filters it."""
+    file_url = f"https://huggingface.co/datasets/vaquill/open-india-law/resolve/main/{filename}"
     
-    # Determine document type
-    is_judgment = "judgment" in filename
-    doc_type = "judgment" if is_judgment else "legislation"
-    
-    # Extract state name from filename
-    # File name format: in_[state-name]_[legislation/judgments].parquet
-    parts = filename.split('_')
-    state_name = ""
-    level = "central"
-    
-    if len(parts) >= 3:
-        raw_state = parts[1]
-        if raw_state == "central":
+    try:
+        with fs.open(file_url, "rb") as f:
+            pf = pq.ParquetFile(f)
+            original_row_count = 0
+            filtered_records = []
+            seen_hashes = set()
+            
+            # Determine document type
+            is_judgment = "judgment" in filename
+            doc_type = "judgment" if is_judgment else "legislation"
+            
+            # Extract state name from filename
+            parts = filename.split('_')
+            state_name = ""
             level = "central"
-        else:
-            level = "state"
-            state_name = raw_state.replace('-', ' ').title()
+            if len(parts) >= 3:
+                raw_state = parts[1]
+                if raw_state == "central":
+                    level = "central"
+                else:
+                    level = "state"
+                    state_name = raw_state.replace('-', ' ').title()
             
-    filtered_records = []
-    seen_hashes = set()
-    
-    # If dry_run or limit_rows, reduce dataset
-    if limit_rows:
-        df = df.head(limit_rows)
-    elif dry_run:
-        df = df.head(500) # process only first 500 rows for dry-run
-        
-    for idx, row in df.iterrows():
-        # Text to classify
-        classification_text = ""
-        title = ""
-        text_content = ""
-        year = None
-        source_url = ""
-        authority = ""
-        
-        if is_judgment:
-            title = row.get("title", "")
-            text_content = row.get("text", "")
-            classification_text = f"{title} {row.get('description', '')} {text_content}"
-            year = row.get("year")
-            source_url = row.get("source_url", "")
-            authority = row.get("court", "Court")
-        else:
-            title = row.get("title", "")
-            text_content = row.get("text", "")
-            classification_text = f"{title} {row.get('section_title', '')} {text_content}"
-            year = row.get("year")
-            source_url = row.get("source_url", "")
-            authority = row.get("source_publisher", "Legislative Department")
-            
-        # Classify domain
-        matched_domain = classify_text(classification_text, domain_keywords)
-        if not matched_domain:
-            continue # Skip row if it doesn't match our LAYMAN domains
-            
-        # Deduplication using content hash
-        content_hash = hashlib.md5(text_content.encode('utf-8', errors='ignore')).hexdigest()
-        if content_hash in seen_hashes:
-            continue
-        seen_hashes.add(content_hash)
-        
-        # Build clean schema
-        record = {
-            "jurisdiction": "central" if level == "central" else "state",
-            "level": level,
-            "state": state_name,
-            "domain": matched_domain,
-            "document_type": doc_type,
-            "title": title,
-            "year": int(year) if pd.notna(year) else None,
-            "authority": authority,
-            "text": text_content,
-            "source": filename,
-            "source_url": source_url
-        }
-        filtered_records = [] if filtered_records is None else filtered_records
-        filtered_records.append(record)
-        
-    return filtered_records, original_row_count
+            # Process row group by row group
+            for rg_idx in range(pf.num_row_groups):
+                df = pf.read_row_group(rg_idx).to_pandas()
+                original_row_count += len(df)
+                
+                # Apply limits for dry-run/debug
+                if limit_rows and len(filtered_records) >= limit_rows:
+                    break
+                if dry_run and len(filtered_records) >= 100:
+                    df = df.head(100) # Keep dry-run fast
+                    
+                for idx, row in df.iterrows():
+                    classification_text = ""
+                    title = ""
+                    text_content = ""
+                    year = None
+                    source_url = ""
+                    authority = ""
+                    
+                    if is_judgment:
+                        title = row.get("title", "")
+                        text_content = row.get("text", "")
+                        classification_text = f"{title} {row.get('description', '')} {text_content}"
+                        year = row.get("year")
+                        source_url = row.get("source_url", "")
+                        authority = row.get("court", "Court")
+                    else:
+                        title = row.get("title", "")
+                        text_content = row.get("text", "")
+                        classification_text = f"{title} {row.get('section_title', '')} {text_content}"
+                        year = row.get("year")
+                        source_url = row.get("source_url", "")
+                        authority = row.get("source_publisher", "Legislative Department")
+                        
+                    # Classify domain
+                    matched_domain = classify_text(classification_text, domain_keywords)
+                    if not matched_domain:
+                        continue
+                        
+                    # Deduplication using content hash
+                    content_hash = hashlib.md5(text_content.encode('utf-8', errors='ignore')).hexdigest()
+                    if content_hash in seen_hashes:
+                        continue
+                    seen_hashes.add(content_hash)
+                    
+                    record = {
+                        "jurisdiction": "central" if level == "central" else "state",
+                        "level": level,
+                        "state": state_name,
+                        "domain": matched_domain,
+                        "document_type": doc_type,
+                        "title": title,
+                        "year": int(year) if pd.notna(year) else None,
+                        "authority": authority,
+                        "text": text_content,
+                        "source": filename,
+                        "source_url": source_url
+                    }
+                    filtered_records.append(record)
+                    
+                    if limit_rows and len(filtered_records) >= limit_rows:
+                        break
+                        
+            return filtered_records, original_row_count
+    except Exception as e:
+        print(f"Error streaming {filename}: {e}")
+        return [], 0
 
 def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
     """Main acquisition driver."""
@@ -296,7 +300,7 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
     if target_files:
         files_to_process = [f for f in all_parquet_files if any(tf in f for tf in target_files)]
     elif dry_run:
-        # Dry-run: process only 2 small files (e.g. central legislation and one small regulation)
+        # Dry-run: process only 2 small files
         files_to_process = ["in_central_legislation.parquet", "in_cpcb_regulations.parquet"]
     else:
         # Full run: process everything
@@ -315,50 +319,35 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
     total_filtered_rows = 0
     total_size_bytes = 0
     
-    # Local temp directory to hold downloads and JSONL outputs
+    # Initialize fsspec HTTP filesystem for streaming
+    fs = fsspec.filesystem('https', headers={'Authorization': f'Bearer {hf_token}'})
+    
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
         
         for filename in files_to_process:
-            print(f"\n--- Processing File: {filename} ---")
+            print(f"\n--- Processing File: {filename} (HTTP Streaming) ---")
             
-            # Step A: Download from HF
-            print("Downloading from HuggingFace...")
-            try:
-                local_file = hf_hub_download(
-                    repo_id="vaquill/open-india-law",
-                    filename=filename,
-                    repo_type="dataset",
-                    token=hf_token,
-                    local_dir=str(temp_path)
-                )
-            except Exception as e:
-                print(f"Error downloading {filename} from HuggingFace: {e}. Skipping.")
-                continue
-                
-            # Step B: Filter and classify
-            print("Filtering and classifying records...")
-            records, orig_count = process_and_filter_file(
-                local_file, 
-                filename, 
-                domain_keywords, 
-                dry_run=dry_run, 
+            # Stream, read, and filter remote Parquet file
+            records, orig_count = process_and_filter_remote_file(
+                fs,
+                filename,
+                domain_keywords,
+                dry_run=dry_run,
                 limit_rows=limit_rows
             )
             
             filtered_count = len(records)
-            print(f"Filtered down from {orig_count} to {filtered_count} unique matching records.")
+            print(f"Streamed and filtered down from {orig_count} to {filtered_count} unique matching records.")
             
             total_original_rows += orig_count
             total_filtered_rows += filtered_count
             
             if filtered_count == 0:
                 print(f"No records matched criteria for {filename}. Skipping upload.")
-                # Clean up local downloaded file
-                os.remove(local_file)
                 continue
                 
-            # Step C: Write to local JSON lines file
+            # Write only the filtered rows to a local JSONL file
             output_filename = f"filtered_{filename.replace('.parquet', '.jsonl')}"
             output_file_path = temp_path / output_filename
             
@@ -369,7 +358,7 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
             file_size = output_file_path.stat().st_size
             total_size_bytes += file_size
             
-            # Step D: Upload to Google Drive
+            # Upload filtered JSONL to Google Drive
             folder_key = "judgments" if "judgment" in filename else "legislation"
             print(f"Uploading filtered JSONL to Google Drive folder '{folder_key}'...")
             drive_id = drive.upload_file(output_file_path, output_filename, folder_key, mime_type="application/x-jsonlines")
@@ -383,11 +372,10 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
                 "file_size_bytes": file_size
             })
             
-            # Clean up local files immediately to save disk space
-            os.remove(local_file)
+            # Remove local temp JSONL immediately to save space
             os.remove(output_file_path)
             
-        # 4. Generate & Upload manifest.json
+        # Generate & Upload manifest.json
         manifest["summary"] = {
             "total_source_records": total_original_rows,
             "total_filtered_records": total_filtered_rows,
@@ -402,7 +390,7 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
         print("\nUploading manifest.json to Google Drive...")
         manifest_id = drive.upload_file(manifest_path, "manifest.json", "metadata", mime_type="application/json")
         
-        # 5. Generate & Upload acquisition_report.md
+        # Generate & Upload acquisition_report.md
         report_md_content = f"""# Phase 1A Dataset Acquisition Report
 
 * **Acquisition Run Date:** {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')}
@@ -435,7 +423,6 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
         print("Uploading acquisition_report.md to Google Drive...")
         report_md_id = drive.upload_file(report_md_path, "acquisition_report.md", "reports", mime_type="text/markdown")
         
-        # Upload manifest as report.json for programmatic evaluations
         report_json_path = temp_path / "acquisition_report.json"
         with open(report_json_path, 'w', encoding='utf-8') as rj_f:
             json.dump(manifest, rj_f, indent=2, ensure_ascii=False)
