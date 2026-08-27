@@ -7,3 +7,6 @@ venv/
 temp_pgvector/
 extracted/
 vector.zip
+Credentials.json
+token.json
+
