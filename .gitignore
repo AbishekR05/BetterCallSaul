@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+venv/
+.idea/
+.vscode/
+temp_pgvector/
+extracted/
+vector.zip
