@@ -128,8 +128,26 @@ class GoogleDriveManager:
         
         return folders
 
+    def check_file_exists(self, file_name, folder_key):
+        """Checks if a file exists in the specified folder. Returns file_id if yes, else None."""
+        parent_id = self.folders.get(folder_key)
+        if not parent_id:
+            return None
+        q = f"name = '{file_name}' and '{parent_id}' in parents and trashed = false"
+        results = self.service.files().list(q=q, fields="files(id)").execute()
+        files = results.get('files', [])
+        return files[0]['id'] if files else None
+
+    def download_file_content(self, file_id):
+        """Downloads the content of a file from Google Drive as bytes."""
+        try:
+            return self.service.files().get_media(fileId=file_id).execute()
+        except Exception as e:
+            print(f"Error downloading file {file_id}: {e}")
+            return None
+
     def upload_file(self, local_path, file_name, folder_key, mime_type="application/json"):
-        """Uploads a local file to a Google Drive folder. Skips if already exists."""
+        """Uploads a local file to a Google Drive folder. Overwrites if already exists."""
         parent_id = self.folders.get(folder_key)
         if not parent_id:
             raise ValueError(f"Invalid folder key: {folder_key}")
@@ -269,8 +287,58 @@ def process_and_filter_remote_file(fs, filename, domain_keywords, dry_run=False,
         print(f"Error streaming {filename}: {e}")
         return [], 0
 
+def upload_manifest_and_report(temp_path, manifest, drive):
+    """Helper function to compile and upload current manifest.json and acquisition_report.md."""
+    # Write manifest.json
+    manifest_path = temp_path / "manifest.json"
+    with open(manifest_path, 'w', encoding='utf-8') as m_f:
+        json.dump(manifest, m_f, indent=2, ensure_ascii=False)
+    drive.upload_file(manifest_path, "manifest.json", "metadata", mime_type="application/json")
+    
+    # Write report json
+    report_json_path = temp_path / "acquisition_report.json"
+    with open(report_json_path, 'w', encoding='utf-8') as rj_f:
+        json.dump(manifest, rj_f, indent=2, ensure_ascii=False)
+    drive.upload_file(report_json_path, "acquisition_report.json", "reports", mime_type="application/json")
+    
+    # Calculate totals
+    total_original_rows = sum(f["original_records"] for f in manifest["files_processed"])
+    total_filtered_rows = sum(f["filtered_records"] for f in manifest["files_processed"])
+    total_size_bytes = sum(f["file_size_bytes"] for f in manifest["files_processed"])
+    
+    # Generate report markdown
+    report_md_content = f"""# Phase 1A Dataset Acquisition Report
+
+* **Acquisition Run Date:** {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')}
+* **Source Dataset:** [vaquill/open-india-law](https://huggingface.co/datasets/vaquill/open-india-law)
+* **Dry Run:** {manifest.get('dry_run', False)}
+
+## Summary Statistics
+
+* **Total Records in Source Subsets:** {total_original_rows:,}
+* **Total Domain-Filtered Records:** {total_filtered_rows:,}
+* **Compression Rate (Filtering Efficiency):** {(100 - (total_filtered_rows / (total_original_rows or 1)) * 100):.2f}% of records filtered out
+* **Total Upload Storage Size:** {total_size_bytes / (1024*1024):.2f} MB
+
+## Processed Files Breakdown
+
+| Source File | Output File (Drive) | Original Chunks | Filtered Chunks | Size (MB) | Drive Folder |
+|-------------|---------------------|-----------------|-----------------|-----------|--------------|
+"""
+    for f_info in manifest["files_processed"]:
+        f_size_mb = f_info["file_size_bytes"] / (1024*1024)
+        folder = "judgments" if "judgment" in f_info["source_file"] else "legislation"
+        report_md_content += f"| {f_info['source_file']} | {f_info['output_file']} | {f_info['original_records']:,} | {f_info['filtered_records']:,} | {f_size_mb:.2f} MB | {folder} |\n"
+        
+    report_md_content += "\n*Note: Private database credentials and Hugging Face tokens are fully protected and excluded from public code tracking.*"
+    
+    report_md_path = temp_path / "acquisition_report.md"
+    with open(report_md_path, 'w', encoding='utf-8') as r_f:
+        r_f.write(report_md_content)
+    drive.upload_file(report_md_path, "acquisition_report.md", "reports", mime_type="text/markdown")
+
 def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
-    """Main acquisition driver."""
+    """Main acquisition driver with checkpointing and skipping."""
     hf_token = get_hf_token()
     if not hf_token:
         print("Error: HF_TOKEN not configured in environment or .env file!")
@@ -284,7 +352,26 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
     drive_service = authenticate_google_drive()
     drive = GoogleDriveManager(drive_service)
     
-    # 3. Get HF Repository Details
+    # 3. Pull existing manifest from Google Drive if it exists to resume progress
+    manifest = {
+        "dataset_name": "vaquill/open-india-law",
+        "processed_at": pd.Timestamp.now().isoformat(),
+        "dry_run": dry_run,
+        "files_processed": []
+    }
+    
+    existing_manifest_id = drive.check_file_exists("manifest.json", "metadata")
+    if existing_manifest_id:
+        print(f"Found existing manifest.json in Google Drive (ID: {existing_manifest_id}). Downloading to resume...")
+        content_bytes = drive.download_file_content(existing_manifest_id)
+        if content_bytes:
+            try:
+                manifest = json.loads(content_bytes.decode('utf-8'))
+                print(f"Resuming acquisition. Already completed {len(manifest['files_processed'])} files.")
+            except Exception as e:
+                print(f"Warning: Could not parse existing manifest: {e}. Starting fresh.")
+                
+    # 4. Get HF Repository Details
     api = HfApi(token=hf_token)
     try:
         info = api.dataset_info("vaquill/open-india-law")
@@ -308,27 +395,29 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
         
     print(f"Files scheduled for processing: {files_to_process}")
     
-    manifest = {
-        "dataset_name": "vaquill/open-india-law",
-        "processed_at": pd.Timestamp.now().isoformat(),
-        "dry_run": dry_run,
-        "files_processed": []
-    }
-    
-    total_original_rows = 0
-    total_filtered_rows = 0
-    total_size_bytes = 0
-    
     # Initialize fsspec HTTP filesystem for streaming
     fs = fsspec.filesystem('https', headers={'Authorization': f'Bearer {hf_token}'})
+    
+    # List of already completed filenames to skip
+    completed_filenames = {f["source_file"] for f in manifest["files_processed"]}
     
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
         
         for filename in files_to_process:
+            output_filename = f"filtered_{filename.replace('.parquet', '.jsonl')}"
+            folder_key = "judgments" if "judgment" in filename else "legislation"
+            
+            # CHECKPOINT: Skip if already marked completed in manifest AND exists on Google Drive
+            if filename in completed_filenames:
+                existing_file_id = drive.check_file_exists(output_filename, folder_key)
+                if existing_file_id:
+                    print(f"\n[SKIP] File '{filename}' is already processed and exists in folder '{folder_key}' (ID: {existing_file_id}). skipping.")
+                    continue
+                    
             print(f"\n--- Processing File: {filename} (HTTP Streaming) ---")
             
-            # Stream, read, and filter remote Parquet file
+            # Stream and filter remote Parquet file
             records, orig_count = process_and_filter_remote_file(
                 fs,
                 filename,
@@ -340,29 +429,36 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
             filtered_count = len(records)
             print(f"Streamed and filtered down from {orig_count} to {filtered_count} unique matching records.")
             
-            total_original_rows += orig_count
-            total_filtered_rows += filtered_count
-            
             if filtered_count == 0:
                 print(f"No records matched criteria for {filename}. Skipping upload.")
+                # Update manifest list so we don't try to query it again
+                manifest["files_processed"] = [f for f in manifest["files_processed"] if f["source_file"] != filename]
+                manifest["files_processed"].append({
+                    "source_file": filename,
+                    "output_file": "",
+                    "original_records": orig_count,
+                    "filtered_records": 0,
+                    "gdrive_file_id": "",
+                    "file_size_bytes": 0
+                })
+                # Checkpoint save
+                upload_manifest_and_report(temp_path, manifest, drive)
                 continue
                 
             # Write only the filtered rows to a local JSONL file
-            output_filename = f"filtered_{filename.replace('.parquet', '.jsonl')}"
             output_file_path = temp_path / output_filename
-            
             with open(output_file_path, 'w', encoding='utf-8') as out_f:
                 for rec in records:
                     out_f.write(json.dumps(rec, ensure_ascii=False) + '\n')
                     
             file_size = output_file_path.stat().st_size
-            total_size_bytes += file_size
             
             # Upload filtered JSONL to Google Drive
-            folder_key = "judgments" if "judgment" in filename else "legislation"
             print(f"Uploading filtered JSONL to Google Drive folder '{folder_key}'...")
             drive_id = drive.upload_file(output_file_path, output_filename, folder_key, mime_type="application/x-jsonlines")
             
+            # Update manifest list (remove if previously exists to prevent duplicate rows in manifest)
+            manifest["files_processed"] = [f for f in manifest["files_processed"] if f["source_file"] != filename]
             manifest["files_processed"].append({
                 "source_file": filename,
                 "output_file": output_filename,
@@ -372,71 +468,24 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
                 "file_size_bytes": file_size
             })
             
-            # Remove local temp JSONL immediately to save space
+            # Save checkpoint (manifest.json and report.md) after every successful upload
+            print("Saving checkpoint files on Google Drive...")
+            upload_manifest_and_report(temp_path, manifest, drive)
+            
+            # Clean up local temp file
             os.remove(output_file_path)
             
-        # Generate & Upload manifest.json
-        manifest["summary"] = {
-            "total_source_records": total_original_rows,
-            "total_filtered_records": total_filtered_rows,
-            "total_size_bytes": total_size_bytes,
-            "total_size_pretty": f"{total_size_bytes / (1024*1024):.2f} MB"
-        }
-        
-        manifest_path = temp_path / "manifest.json"
-        with open(manifest_path, 'w', encoding='utf-8') as m_f:
-            json.dump(manifest, m_f, indent=2, ensure_ascii=False)
-            
-        print("\nUploading manifest.json to Google Drive...")
-        manifest_id = drive.upload_file(manifest_path, "manifest.json", "metadata", mime_type="application/json")
-        
-        # Generate & Upload acquisition_report.md
-        report_md_content = f"""# Phase 1A Dataset Acquisition Report
-
-* **Acquisition Run Date:** {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')}
-* **Source Dataset:** [vaquill/open-india-law](https://huggingface.co/datasets/vaquill/open-india-law)
-* **Dry Run:** {dry_run}
-
-## Summary Statistics
-
-* **Total Records in Source Subsets:** {total_original_rows:,}
-* **Total Domain-Filtered Records:** {total_filtered_rows:,}
-* **Compression Rate (Filtering Efficiency):** {(100 - (total_filtered_rows / (total_original_rows or 1)) * 100):.2f}% of records filtered out
-* **Total Upload Storage Size:** {total_size_bytes / (1024*1024):.2f} MB
-
-## Processed Files Breakdown
-
-| Source File | Output File (Drive) | Original Chunks | Filtered Chunks | Size (MB) | Drive Folder |
-|-------------|---------------------|-----------------|-----------------|-----------|--------------|
-"""
-        for f_info in manifest["files_processed"]:
-            f_size_mb = f_info["file_size_bytes"] / (1024*1024)
-            folder = "judgments" if "judgment" in f_info["source_file"] else "legislation"
-            report_md_content += f"| {f_info['source_file']} | {f_info['output_file']} | {f_info['original_records']:,} | {f_info['filtered_records']:,} | {f_size_mb:.2f} MB | {folder} |\n"
-            
-        report_md_content += "\n*Note: Private database credentials and Hugging Face tokens are fully protected and excluded from public code tracking.*"
-        
-        report_md_path = temp_path / "acquisition_report.md"
-        with open(report_md_path, 'w', encoding='utf-8') as r_f:
-            r_f.write(report_md_content)
-            
-        print("Uploading acquisition_report.md to Google Drive...")
-        report_md_id = drive.upload_file(report_md_path, "acquisition_report.md", "reports", mime_type="text/markdown")
-        
-        report_json_path = temp_path / "acquisition_report.json"
-        with open(report_json_path, 'w', encoding='utf-8') as rj_f:
-            json.dump(manifest, rj_f, indent=2, ensure_ascii=False)
-            
-        print("Uploading acquisition_report.json to Google Drive...")
-        report_json_id = drive.upload_file(report_json_path, "acquisition_report.json", "reports", mime_type="application/json")
-        
+    # Final Summary display
+    total_original_rows = sum(f["original_records"] for f in manifest["files_processed"])
+    total_filtered_rows = sum(f["filtered_records"] for f in manifest["files_processed"])
+    total_size_bytes = sum(f["file_size_bytes"] for f in manifest["files_processed"])
+    
     print("\n" + "="*50)
-    print("PHASE 1A ACQUISITION COMPLETE!")
+    print("PHASE 1A ACQUISITION RUN COMPLETE!")
     print("="*50)
-    print(f"Total Filtered Records Uploaded: {total_filtered_rows:,}")
-    print(f"Storage Footprint: {total_size_bytes / (1024*1024):.2f} MB")
-    print(f"Google Drive Manifest ID: {manifest_id}")
-    print(f"Google Drive Markdown Report ID: {report_md_id}")
+    print(f"Total Filtered Records: {total_filtered_rows:,}")
+    print(f"Storage Footprint on Google Drive: {total_size_bytes / (1024*1024):.2f} MB")
+    print("All progress is securely persistent and checkpointed.")
     print("="*50)
 
 if __name__ == "__main__":
