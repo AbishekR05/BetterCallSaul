@@ -397,30 +397,29 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
     temp_root = BASE_DIR / "temp"
     temp_root.mkdir(parents=True, exist_ok=True)
     
-    with tempfile.TemporaryDirectory(dir=str(temp_root), ignore_cleanup_errors=True) as temp_dir:
-
-        temp_path = Path(temp_dir)
+    for filename in files_to_process:
+        output_filename = f"filtered_{filename.replace('.parquet', '.jsonl.gz')}"
+        output_filename_legacy = f"filtered_{filename.replace('.parquet', '.jsonl')}"
+        folder_key = "judgments" if "judgment" in filename else "legislation"
         
-        for filename in files_to_process:
-            output_filename = f"filtered_{filename.replace('.parquet', '.jsonl.gz')}"
-            output_filename_legacy = f"filtered_{filename.replace('.parquet', '.jsonl')}"
-            folder_key = "judgments" if "judgment" in filename else "legislation"
-            
-            # CHECKPOINT: Skip if already marked completed in manifest
-            if filename in completed_filenames:
-                # Find the previous run details in the manifest
-                prev_entry = next((f for f in manifest["files_processed"] if f["source_file"] == filename), None)
-                if prev_entry and prev_entry.get("filtered_records", 0) == 0:
-                    print(f"\n[SKIP] File '{filename}' was already processed in a previous run (yielded 0 matching records). skipping.")
-                    continue
-                    
-                existing_file_id = drive.check_file_exists(output_filename, folder_key) or drive.check_file_exists(output_filename_legacy, folder_key)
-                if existing_file_id:
-                    print(f"\n[SKIP] File '{filename}' is already processed and exists in folder '{folder_key}' (ID: {existing_file_id}). skipping.")
-                    continue
-
-                    
-            print(f"\n--- Processing File: {filename} (Download & Local Filter) ---")
+        # CHECKPOINT: Skip if already marked completed in manifest
+        if filename in completed_filenames:
+            # Find the previous run details in the manifest
+            prev_entry = next((f for f in manifest["files_processed"] if f["source_file"] == filename), None)
+            if prev_entry and prev_entry.get("filtered_records", 0) == 0:
+                print(f"\n[SKIP] File '{filename}' was already processed in a previous run (yielded 0 matching records). skipping.")
+                continue
+                
+            existing_file_id = drive.check_file_exists(output_filename, folder_key) or drive.check_file_exists(output_filename_legacy, folder_key)
+            if existing_file_id:
+                print(f"\n[SKIP] File '{filename}' is already processed and exists in folder '{folder_key}' (ID: {existing_file_id}). skipping.")
+                continue
+                
+        print(f"\n--- Processing File: {filename} (Download & Local Filter) ---")
+        
+        # Create a fresh temporary directory for this file iteration only
+        with tempfile.TemporaryDirectory(dir=str(temp_root), ignore_cleanup_errors=True) as temp_dir:
+            temp_path = Path(temp_dir)
             
             # Step A: Download compressed Parquet file locally
             print("Downloading from HuggingFace...")
@@ -461,7 +460,6 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
                     "file_size_bytes": 0
                 })
                 upload_manifest_and_report(temp_path, manifest, drive)
-                os.remove(local_file)
                 continue
                 
             # Write only the filtered rows to a local compressed JSONL file
@@ -475,7 +473,6 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
             # Upload filtered JSONL to Google Drive
             print(f"Uploading filtered JSONL.GZ to Google Drive folder '{folder_key}'...")
             drive_id = drive.upload_file(output_file_path, output_filename, folder_key, mime_type="application/gzip")
-
             
             # Update manifest list
             manifest["files_processed"] = [f for f in manifest["files_processed"] if f["source_file"] != filename]
@@ -492,9 +489,10 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
             print("Saving checkpoint files on Google Drive...")
             upload_manifest_and_report(temp_path, manifest, drive)
             
-            # Clean up local temp files immediately to free space
+            # Explicitly clean up file objects to release locks
             os.remove(local_file)
             os.remove(output_file_path)
+
             
     # Final Summary display
     total_original_rows = sum(f["original_records"] for f in manifest["files_processed"])
