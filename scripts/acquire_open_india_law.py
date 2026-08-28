@@ -141,7 +141,7 @@ class GoogleDriveManager:
     def download_file_content(self, file_id):
         """Downloads the content of a file from Google Drive as bytes."""
         try:
-            return self.service.files().get_media(fileId=file_id).execute()
+            return self.service.files().get_media(fileId=file_id).execute(num_retries=5)
         except Exception as e:
             print(f"Error downloading file {file_id}: {e}")
             return None
@@ -153,14 +153,14 @@ class GoogleDriveManager:
             raise ValueError(f"Invalid folder key: {folder_key}")
             
         q = f"name = '{file_name}' and '{parent_id}' in parents and trashed = false"
-        results = self.service.files().list(q=q, fields="files(id)").execute()
+        results = self.service.files().list(q=q, fields="files(id)").execute(num_retries=5)
         files = results.get('files', [])
         
         if files:
             file_id = files[0]['id']
             print(f"File '{file_name}' already exists in folder '{folder_key}' (ID: {file_id}). Overwriting...")
             media = MediaFileUpload(str(local_path), mimetype=mime_type, resumable=True)
-            self.service.files().update(fileId=file_id, media_body=media).execute()
+            self.service.files().update(fileId=file_id, media_body=media).execute(num_retries=5)
             return file_id
             
         file_metadata = {
@@ -168,10 +168,11 @@ class GoogleDriveManager:
             'parents': [parent_id]
         }
         media = MediaFileUpload(str(local_path), mimetype=mime_type, resumable=True)
-        file = self.service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+        file = self.service.files().create(body=file_metadata, media_body=media, fields='id').execute(num_retries=5)
         file_id = file.get('id')
         print(f"Uploaded '{file_name}' (ID: {file_id})")
         return file_id
+
 
 def load_domain_keywords():
     """Load config/domain_mapping.json containing keywords per domain."""
@@ -394,7 +395,8 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
     temp_root = BASE_DIR / "temp"
     temp_root.mkdir(parents=True, exist_ok=True)
     
-    with tempfile.TemporaryDirectory(dir=str(temp_root)) as temp_dir:
+    with tempfile.TemporaryDirectory(dir=str(temp_root), ignore_cleanup_errors=True) as temp_dir:
+
         temp_path = Path(temp_dir)
         
         for filename in files_to_process:
