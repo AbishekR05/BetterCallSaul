@@ -403,7 +403,7 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
         
         for filename in files_to_process:
             output_filename = f"filtered_{filename.replace('.parquet', '.jsonl.gz')}"
-
+            output_filename_legacy = f"filtered_{filename.replace('.parquet', '.jsonl')}"
             folder_key = "judgments" if "judgment" in filename else "legislation"
             
             # CHECKPOINT: Skip if already marked completed in manifest
@@ -414,10 +414,11 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
                     print(f"\n[SKIP] File '{filename}' was already processed in a previous run (yielded 0 matching records). skipping.")
                     continue
                     
-                existing_file_id = drive.check_file_exists(output_filename, folder_key)
+                existing_file_id = drive.check_file_exists(output_filename, folder_key) or drive.check_file_exists(output_filename_legacy, folder_key)
                 if existing_file_id:
                     print(f"\n[SKIP] File '{filename}' is already processed and exists in folder '{folder_key}' (ID: {existing_file_id}). skipping.")
                     continue
+
                     
             print(f"\n--- Processing File: {filename} (Download & Local Filter) ---")
             
