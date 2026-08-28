@@ -191,9 +191,11 @@ def classify_text(text, domain_keywords):
     return None
 
 def process_and_filter_file(local_file_path, filename, domain_keywords, dry_run=False, limit_rows=None):
-    """Loads Parquet file locally, applies domain filtering, and cleans duplicates."""
-    df = pd.read_parquet(local_file_path)
-    original_row_count = len(df)
+    """Loads Parquet file locally row-group by row-group to avoid memory errors."""
+    pf = pq.ParquetFile(local_file_path)
+    original_row_count = 0
+    filtered_records = []
+    seen_hashes = set()
     
     # Determine document type
     is_judgment = "judgment" in filename
@@ -211,65 +213,73 @@ def process_and_filter_file(local_file_path, filename, domain_keywords, dry_run=
             level = "state"
             state_name = raw_state.replace('-', ' ').title()
             
-    filtered_records = []
-    seen_hashes = set()
-    
-    # If dry_run or limit_rows, reduce dataset
-    if limit_rows:
-        df = df.head(limit_rows)
-    elif dry_run:
-        df = df.head(500)
+    for rg_idx in range(pf.num_row_groups):
+        df = pf.read_row_group(rg_idx).to_pandas()
+        original_row_count += len(df)
         
-    for idx, row in df.iterrows():
-        classification_text = ""
-        title = ""
-        text_content = ""
-        year = None
-        source_url = ""
-        authority = ""
-        
-        if is_judgment:
-            title = row.get("title", "")
-            text_content = row.get("text", "")
-            classification_text = f"{title} {row.get('description', '')} {text_content}"
-            year = row.get("year")
-            source_url = row.get("source_url", "")
-            authority = row.get("court", "Court")
-        else:
-            title = row.get("title", "")
-            text_content = row.get("text", "")
-            classification_text = f"{title} {row.get('section_title', '')} {text_content}"
-            year = row.get("year")
-            source_url = row.get("source_url", "")
-            authority = row.get("source_publisher", "Legislative Department")
+        # Apply limits for dry-run/debug
+        if limit_rows and len(filtered_records) >= limit_rows:
+            break
+        if dry_run and len(filtered_records) >= 100:
+            df = df.head(100)
             
-        # Classify domain
-        matched_domain = classify_text(classification_text, domain_keywords)
-        if not matched_domain:
-            continue
+        for idx, row in df.iterrows():
+            classification_text = ""
+            title = ""
+            text_content = ""
+            year = None
+            source_url = ""
+            authority = ""
             
-        # Deduplication using content hash
-        content_hash = hashlib.md5(text_content.encode('utf-8', errors='ignore')).hexdigest()
-        if content_hash in seen_hashes:
-            continue
-        seen_hashes.add(content_hash)
-        
-        record = {
-            "jurisdiction": "central" if level == "central" else "state",
-            "level": level,
-            "state": state_name,
-            "domain": matched_domain,
-            "document_type": doc_type,
-            "title": title,
-            "year": int(year) if pd.notna(year) else None,
-            "authority": authority,
-            "text": text_content,
-            "source": filename,
-            "source_url": source_url
-        }
-        filtered_records.append(record)
+            if is_judgment:
+                title = row.get("title", "")
+                text_content = row.get("text", "")
+                classification_text = f"{title} {row.get('description', '')} {text_content}"
+                year = row.get("year")
+                source_url = row.get("source_url", "")
+                authority = row.get("court", "Court")
+            else:
+                title = row.get("title", "")
+                text_content = row.get("text", "")
+                classification_text = f"{title} {row.get('section_title', '')} {text_content}"
+                year = row.get("year")
+                source_url = row.get("source_url", "")
+                authority = row.get("source_publisher", "Legislative Department")
+                
+            # Classify domain
+            matched_domain = classify_text(classification_text, domain_keywords)
+            if not matched_domain:
+                continue
+                
+            # Deduplication using content hash
+            content_hash = hashlib.md5(text_content.encode('utf-8', errors='ignore')).hexdigest()
+            if content_hash in seen_hashes:
+                continue
+            seen_hashes.add(content_hash)
+            
+            record = {
+                "jurisdiction": "central" if level == "central" else "state",
+                "level": level,
+                "state": state_name,
+                "domain": matched_domain,
+                "document_type": doc_type,
+                "title": title,
+                "year": int(year) if pd.notna(year) else None,
+                "authority": authority,
+                "text": text_content,
+                "source": filename,
+                "source_url": source_url
+            }
+            filtered_records.append(record)
+            
+            if limit_rows and len(filtered_records) >= limit_rows:
+                break
+                
+        # Clean memory
+        del df
         
     return filtered_records, original_row_count
+
 
 def upload_manifest_and_report(temp_path, manifest, drive):
     """Helper function to compile and upload current manifest.json and acquisition_report.md."""
