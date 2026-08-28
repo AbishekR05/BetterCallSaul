@@ -389,8 +389,14 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
             output_filename = f"filtered_{filename.replace('.parquet', '.jsonl')}"
             folder_key = "judgments" if "judgment" in filename else "legislation"
             
-            # CHECKPOINT: Skip if already marked completed in manifest AND exists on Google Drive
+            # CHECKPOINT: Skip if already marked completed in manifest
             if filename in completed_filenames:
+                # Find the previous run details in the manifest
+                prev_entry = next((f for f in manifest["files_processed"] if f["source_file"] == filename), None)
+                if prev_entry and prev_entry.get("filtered_records", 0) == 0:
+                    print(f"\n[SKIP] File '{filename}' was already processed in a previous run (yielded 0 matching records). skipping.")
+                    continue
+                    
                 existing_file_id = drive.check_file_exists(output_filename, folder_key)
                 if existing_file_id:
                     print(f"\n[SKIP] File '{filename}' is already processed and exists in folder '{folder_key}' (ID: {existing_file_id}). skipping.")
