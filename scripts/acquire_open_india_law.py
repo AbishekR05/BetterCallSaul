@@ -5,7 +5,9 @@ import json
 import hashlib
 import argparse
 import tempfile
+import gzip
 import pandas as pd
+
 import pyarrow.parquet as pq
 from pathlib import Path
 
@@ -400,7 +402,8 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
         temp_path = Path(temp_dir)
         
         for filename in files_to_process:
-            output_filename = f"filtered_{filename.replace('.parquet', '.jsonl')}"
+            output_filename = f"filtered_{filename.replace('.parquet', '.jsonl.gz')}"
+
             folder_key = "judgments" if "judgment" in filename else "legislation"
             
             # CHECKPOINT: Skip if already marked completed in manifest
@@ -460,17 +463,18 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
                 os.remove(local_file)
                 continue
                 
-            # Write only the filtered rows to a local JSONL file
+            # Write only the filtered rows to a local compressed JSONL file
             output_file_path = temp_path / output_filename
-            with open(output_file_path, 'w', encoding='utf-8') as out_f:
+            with gzip.open(output_file_path, 'wt', encoding='utf-8') as out_f:
                 for rec in records:
                     out_f.write(json.dumps(rec, ensure_ascii=False) + '\n')
                     
             file_size = output_file_path.stat().st_size
             
             # Upload filtered JSONL to Google Drive
-            print(f"Uploading filtered JSONL to Google Drive folder '{folder_key}'...")
-            drive_id = drive.upload_file(output_file_path, output_filename, folder_key, mime_type="application/x-jsonlines")
+            print(f"Uploading filtered JSONL.GZ to Google Drive folder '{folder_key}'...")
+            drive_id = drive.upload_file(output_file_path, output_filename, folder_key, mime_type="application/gzip")
+
             
             # Update manifest list
             manifest["files_processed"] = [f for f in manifest["files_processed"] if f["source_file"] != filename]
