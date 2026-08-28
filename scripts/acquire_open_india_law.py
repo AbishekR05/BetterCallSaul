@@ -378,7 +378,11 @@ def run_acquisition(dry_run=False, limit_rows=None, target_files=None):
     # List of already completed filenames to skip
     completed_filenames = {f["source_file"] for f in manifest["files_processed"]}
     
-    with tempfile.TemporaryDirectory() as temp_dir:
+    # Ensure local temp directory exists inside project root
+    temp_root = BASE_DIR / "temp"
+    temp_root.mkdir(parents=True, exist_ok=True)
+    
+    with tempfile.TemporaryDirectory(dir=str(temp_root)) as temp_dir:
         temp_path = Path(temp_dir)
         
         for filename in files_to_process:
