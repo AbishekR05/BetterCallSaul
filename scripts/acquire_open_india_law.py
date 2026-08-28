@@ -6,7 +6,9 @@ import hashlib
 import argparse
 import tempfile
 import pandas as pd
+import pyarrow.parquet as pq
 from pathlib import Path
+
 from dotenv import load_dotenv
 from huggingface_hub import HfApi, hf_hub_download
 from google.oauth2.credentials import Credentials
