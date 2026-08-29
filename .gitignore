@@ -10,5 +10,5 @@ vector.zip
 Credentials.json
 token.json
 temp/
-
-
+scratch/
+*.log
