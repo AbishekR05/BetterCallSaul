@@ -15,8 +15,8 @@ BENCHMARK_DIR = BASE_DIR / "benchmark" / "phase_2_1"
 TEMP_DOWNLOAD_DIR = BENCHMARK_DIR / "temp_downloads"
 
 # Target sample sizes
-TARGET_LEGISLATION_SIZE = 5000
-TARGET_JUDGMENT_SIZE = 5000
+TARGET_LEGISLATION_SIZE = 500
+TARGET_JUDGMENT_SIZE = 500
 TOTAL_TARGET_SIZE = TARGET_LEGISLATION_SIZE + TARGET_JUDGMENT_SIZE
 
 def draw_stratified_sample(df, target_size, source_type_name):

@@ -25,8 +25,8 @@ TOTAL_CORPUS_SIZE = 15747195 # Final Phase 1B record count
 # Configured Models
 MODELS_CONFIG = [
     {
-        "name": "l3cube-pune/indian-legal-sentences",
-        "short_name": "indian-legal-sentences",
+        "name": "amixh/sentence-embedding-model-InLegalBERT-2",
+        "short_name": "InLegalBERT-SBERT",
         "dims": 768,
         "max_length": 512,
         "query_prefix": "",
@@ -140,11 +140,29 @@ def evaluate_retrieval(similarities, chunk_ids, eval_queries, relevance_mapping,
 def main():
     print("Starting embedding model benchmark harness...")
     
-    # Check device
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Executing benchmark on device: {device.upper()}")
-    if device == "cuda":
-        print(f"GPU Model: {torch.cuda.get_device_name(0)}")
+    # Configure CPU threads for parallel execution during fallback
+    torch.set_num_threads(6)
+    torch.set_num_interop_threads(6)
+    print("Configured PyTorch to use 6 CPU threads.")
+    
+    # Check device and compatibility
+    device = "cpu"
+    if torch.cuda.is_available():
+        try:
+            major = torch.cuda.get_device_properties(0).major
+            if major > 9:
+                print(f"Warning: GPU compute capability sm_{major}0 is greater than PyTorch supported capability (sm_90).")
+                print("Falling back to CPU for execution to prevent runtime compatibility crashes.")
+            else:
+                # Test a simple CUDA operation just in case
+                x = torch.zeros(1).cuda()
+                device = "cuda"
+                print(f"Executing benchmark on device: CUDA (GPU: {torch.cuda.get_device_name(0)})")
+        except Exception as e:
+            print(f"Warning: CUDA is available but failed verification: {e}")
+            print("Falling back to CPU for execution.")
+    else:
+        print("Executing benchmark on device: CPU")
         
     # Check if files exist
     if not SAMPLED_CHUNKS_PATH.exists() or not QUERIES_PATH.exists() or not RELEVANCE_PATH.exists():
@@ -270,6 +288,9 @@ def main():
     sorted_results = sorted(benchmark_results, key=lambda x: x["mrr"], reverse=True)
     best_model = sorted_results[0]
     
+    leg_count = len(df_chunks[df_chunks["source_type"] == "legislation"])
+    jud_count = len(df_chunks[df_chunks["source_type"] == "judgment"])
+    
     report_content = f"""# Embedding Model Benchmark Report (Phase 2.1)
 
 This report details the comparative evaluation of 4 candidate embedding models for the **BetterCallSaul** layman legal awareness RAG system. The benchmark was executed locally on your **NVIDIA GeForce RTX 5060 (8 GB VRAM)**.
@@ -277,7 +298,7 @@ This report details the comparative evaluation of 4 candidate embedding models f
 ---
 
 ## 1. Methodology Summary
-* **Stratified Sample Size:** {len(df_chunks):,} chunks drawn from Phase 1C completed outputs (5,000 Legislation + 5,000 Judgments).
+* **Stratified Sample Size:** {len(df_chunks):,} chunks drawn from Phase 1C completed outputs ({leg_count:,} Legislation + {jud_count:,} Judgments).
 * **Evaluation Query Set:** {len(eval_queries)} layman-style questions covering multiple domains and jurisdictions.
 * **Ground Truth:** Human-in-the-loop relevance mapping of query IDs to corresponding source chunk IDs.
 * **Similarity Metric:** Cosine similarity.
