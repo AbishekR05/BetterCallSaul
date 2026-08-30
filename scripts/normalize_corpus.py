@@ -1,6 +1,22 @@
 # scripts/normalize_corpus.py
 import os
 import sys
+import socket
+
+# Force Python's socket to resolve IPv4 addresses only to avoid broken IPv6 connection timeouts on Windows
+orig_getaddrinfo = socket.getaddrinfo
+def forced_ipv4_getaddrinfo(*args, **kwargs):
+    if len(args) >= 3:
+        # if family is passed as positional argument, modify it
+        args = list(args)
+        args[2] = socket.AF_INET
+    else:
+        family = kwargs.get('family', socket.AF_UNSPEC)
+        if family == socket.AF_UNSPEC or family == socket.AF_INET6:
+            kwargs['family'] = socket.AF_INET
+    return orig_getaddrinfo(*args, **kwargs)
+socket.getaddrinfo = forced_ipv4_getaddrinfo
+
 import json
 import gzip
 import hashlib
