@@ -149,15 +149,13 @@ def main():
     device = "cpu"
     if torch.cuda.is_available():
         try:
-            major = torch.cuda.get_device_properties(0).major
-            if major > 9:
-                print(f"Warning: GPU compute capability sm_{major}0 is greater than PyTorch supported capability (sm_90).")
-                print("Falling back to CPU for execution to prevent runtime compatibility crashes.")
-            else:
-                # Test a simple CUDA operation just in case
-                x = torch.zeros(1).cuda()
-                device = "cuda"
-                print(f"Executing benchmark on device: CUDA (GPU: {torch.cuda.get_device_name(0)})")
+            # Perform a matrix multiplication on CUDA and synchronize to verify Blackwell compatibility
+            x1 = torch.randn(2, 2).cuda()
+            x2 = torch.randn(2, 2).cuda()
+            res = x1 @ x2
+            torch.cuda.synchronize()
+            device = "cuda"
+            print(f"Executing benchmark on device: CUDA (GPU: {torch.cuda.get_device_name(0)})")
         except Exception as e:
             print(f"Warning: CUDA is available but failed verification: {e}")
             print("Falling back to CPU for execution.")

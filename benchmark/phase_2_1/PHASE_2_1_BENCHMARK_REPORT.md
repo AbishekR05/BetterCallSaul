@@ -5,7 +5,7 @@ This report details the comparative evaluation of 4 candidate embedding models f
 ---
 
 ## 1. Methodology Summary
-* **Stratified Sample Size:** 1,000 chunks drawn from Phase 1C completed outputs (5,000 Legislation + 5,000 Judgments).
+* **Stratified Sample Size:** 1,000 chunks drawn from Phase 1C completed outputs (500 Legislation + 500 Judgments).
 * **Evaluation Query Set:** 48 layman-style questions covering multiple domains and jurisdictions.
 * **Ground Truth:** Human-in-the-loop relevance mapping of query IDs to corresponding source chunk IDs.
 * **Similarity Metric:** Cosine similarity.
@@ -17,10 +17,10 @@ This report details the comparative evaluation of 4 candidate embedding models f
 
 | Model | Dimensions | Recall@5 | Recall@10 | Precision@5 | Precision@10 | MRR | Throughput (c/s) | Peak VRAM (GB) | Est. Full Embed Time (hrs) | Projected DB Size (GB) | License |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `amixh/sentence-embedding-model-InLegalBERT-2` | 768 | 0.1667 | 0.2292 | 0.0333 | 0.0229 | 0.1195 | 4.6 | 0.00 | 959.53 | 80.0 | Apache 2.0 |
-| `BAAI/bge-base-en-v1.5` | 768 | 0.7708 | 0.7917 | 0.1542 | 0.0792 | 0.6615 | 4.5 | 0.00 | 979.48 | 80.0 | MIT |
-| `BAAI/bge-large-en-v1.5` | 1024 | 0.6250 | 0.7500 | 0.1250 | 0.0750 | 0.5736 | 1.3 | 0.00 | 3326.67 | 106.7 | MIT |
-| `sentence-transformers/all-MiniLM-L6-v2` | 384 | 0.5208 | 0.5833 | 0.1042 | 0.0583 | 0.4403 | 60.5 | 0.00 | 72.30 | 40.0 | Apache 2.0 |
+| `amixh/sentence-embedding-model-InLegalBERT-2` | 768 | 0.1667 | 0.2292 | 0.0333 | 0.0229 | 0.1195 | 80.9 | 1.59 | 54.09 | 80.0 | Apache 2.0 |
+| `BAAI/bge-base-en-v1.5` | 768 | 0.7708 | 0.7917 | 0.1542 | 0.0792 | 0.6615 | 79.3 | 2.00 | 55.17 | 80.0 | MIT |
+| `BAAI/bge-large-en-v1.5` | 1024 | 0.6250 | 0.7500 | 0.1250 | 0.0750 | 0.5736 | 25.6 | 2.86 | 170.97 | 106.7 | MIT |
+| `sentence-transformers/all-MiniLM-L6-v2` | 384 | 0.5208 | 0.5833 | 0.1042 | 0.0583 | 0.4403 | 760.4 | 2.76 | 5.75 | 40.0 | Apache 2.0 |
 
 ---
 
@@ -59,7 +59,7 @@ This report details the comparative evaluation of 4 candidate embedding models f
 > [!IMPORTANT]
 > Based on quantitative evidence, we recommend using **`BAAI/bge-base-en-v1.5`** as the embedding model for the BetterCallSaul project.
 > 
-> * **Justification:** It achieved the highest mean reciprocal rank (**MRR: 0.6615**) and Recall@10 (**0.7917**) on our layman Indian-law query set, while maintaining a highly feasible VRAM footprint (0.00 GB) and projected full-corpus embedding time (979.48 hours).
+> * **Justification:** It achieved the highest mean reciprocal rank (**MRR: 0.6615**) and Recall@10 (**0.7917**) on our layman Indian-law query set, while maintaining a highly feasible VRAM footprint (2.00 GB) and projected full-corpus embedding time (55.17 hours).
 
 ---
 
