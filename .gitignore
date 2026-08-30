@@ -13,3 +13,4 @@ temp/
 scratch/
 Data/
 *.log
+pg_tablespace/
