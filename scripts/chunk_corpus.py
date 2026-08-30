@@ -112,7 +112,8 @@ def parse_legislation_text(text):
         remaining = text[section_match.end():].strip()
         
         # Check for repeated section number title pattern
-        title_match = re.match(rf"^(.+?\.)\s*{section}\b", remaining)
+        # Capped at first 500 characters to prevent catastrophic backtracking on long texts
+        title_match = re.match(rf"^(.+?\.)\s*{section}\b", remaining[:500])
         if title_match:
             section_title = title_match.group(1).strip()
             clean_text = remaining
@@ -162,46 +163,45 @@ def parse_judgment_text(text):
     section_type = ""
     clean_text = text
     
-    # Try regex match first
-    judgment_regex = r'^Case:\s*(.*?)\s*Court:\s*(.*?)\s*Section:\s*(.*?)\s*Serial\s+No\.\s*\d+(?:\s*[\w\s\-]+List)?\s*(.*)$'
-    match = re.match(judgment_regex, text, re.DOTALL | re.IGNORECASE)
-    if match:
-        case_name_part = match.group(1).strip()
-        case_name = re.sub(r'\s*\(\d{4}\)\s*$', '', case_name_part).strip()
-        court = match.group(2).strip()
-        section_type = match.group(3).strip()
-        clean_text = match.group(4).strip()
-    else:
-        if text.startswith("Case:"):
-            court_idx = text.find("Court:")
-            if court_idx != -1:
-                case_name_part = text[5:court_idx].strip()
-                case_name = re.sub(r'\s*\(\d{4}\)\s*$', '', case_name_part).strip()
+    # Substring parsing (avoids wildcard regexes to prevent catastrophic backtracking on long texts)
+    if text.startswith("Case:"):
+        court_idx = text.find("Court:")
+        if court_idx != -1:
+            case_name_part = text[5:court_idx].strip()
+            case_name = re.sub(r'\s*\(\d{4}\)\s*$', '', case_name_part).strip()
+            
+            section_idx = text.find("Section:", court_idx)
+            if section_idx != -1:
+                court = text[court_idx + 6:section_idx].strip()
                 
-                section_idx = text.find("Section:", court_idx)
-                if section_idx != -1:
-                    court = text[court_idx + 6:section_idx].strip()
+                serial_idx = text.find("Serial No.", section_idx)
+                if serial_idx != -1:
+                    section_type = text[section_idx + 8:serial_idx].strip()
                     
-                    serial_idx = text.find("Serial No.", section_idx)
-                    if serial_idx != -1:
-                        section_type = text[section_idx + 8:serial_idx].strip()
+                    # Match Serial No metadata block without backtracks
+                    serial_text = text[serial_idx:serial_idx + 100]
+                    serial_match = re.match(r'^Serial\s+No\.\s*\d+(?:\s*[\w\s\-]+List)?', serial_text, re.IGNORECASE)
+                    if serial_match:
+                        end_meta_idx = serial_idx + serial_match.end()
+                        clean_text = text[end_meta_idx:].strip()
+                    else:
                         list_idx = text.find("List", serial_idx)
-                        if list_idx != -1:
+                        if list_idx != -1 and list_idx < serial_idx + 50:
                             clean_text = text[list_idx + 4:].strip()
                         else:
-                            clean_text = text[serial_idx + 10:].strip()
+                            clean_text = text[serial_idx + 15:].strip()
+                else:
+                    end_section_idx = -1
+                    for keyword in ["[TITLE]", "[SECTION]", "#"]:
+                        idx = text.find(keyword, section_idx)
+                        if idx != -1:
+                            if end_section_idx == -1 or idx < end_section_idx:
+                                end_section_idx = idx
+                    if end_section_idx != -1:
+                        section_type = text[section_idx + 8:end_section_idx].strip()
+                        clean_text = text[end_section_idx:].strip()
                     else:
-                        end_section_idx = -1
-                        for keyword in ["[TITLE]", "[SECTION]", "#"]:
-                            idx = text.find(keyword, section_idx)
-                            if idx != -1:
-                                if end_section_idx == -1 or idx < end_section_idx:
-                                    end_section_idx = idx
-                        if end_section_idx != -1:
-                            section_type = text[section_idx + 8:end_section_idx].strip()
-                            clean_text = text[end_section_idx:].strip()
-                        else:
-                            section_type = text[section_idx + 8:].strip()
+                        section_type = text[section_idx + 8:].strip()
                             
     clean_text = re.sub(r'^\[TITLE\]\s*', '', clean_text)
     clean_text = re.sub(r'^\[SECTION\]\s*', '', clean_text)
