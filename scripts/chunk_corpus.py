@@ -450,11 +450,20 @@ def process_single_file(drive, drive_service, filename, folder_key, keep_local=F
             
     # Process file line-by-line
     print("  Chunking records...")
-    all_chunks = []
+    partition_chunks = []
     processed_docs = 0
     skipped_docs = 0
     duplicate_chunks_count = 0
     seen_chunk_hashes = set()
+    total_chunks_created = 0
+    partition_index = 1
+    total_uploaded_size = 0
+    
+    # Google Drive destinations
+    chunked_root_id = drive.get_or_create_subfolder("03_chunked", drive.root_id)
+    chunked_dest_folder_id = drive.get_or_create_subfolder(folder_key, chunked_root_id)
+    
+    CHUNKS_PER_PARTITION = 250000  # 250k chunks per file (~50-100MB Parquet)
     
     # Track statistics
     stats = {
@@ -469,6 +478,33 @@ def process_single_file(drive, drive_service, filename, folder_key, keep_local=F
         "skipped_reasons": {}
     }
     
+    def flush_partition(chunks_list, part_idx):
+        nonlocal total_uploaded_size
+        if not chunks_list:
+            return 0
+        part_name = actual_filename.replace(".jsonl.gz", f"_part_{part_idx:04d}.parquet")
+        # In case the original had .jsonl and we appended .gz
+        if part_name.endswith(".jsonl_part_{part_idx:04d}.parquet"):
+            part_name = part_name.replace(".jsonl_part_{part_idx:04d}.parquet", f"_part_{part_idx:04d}.parquet")
+        elif part_name.endswith(".jsonl.parquet"):
+            part_name = part_name.replace(".jsonl.parquet", f"_part_{part_idx:04d}.parquet")
+            
+        temp_parquet_path = LOCAL_TEMP_DIR / part_name
+        
+        print(f"  Writing partition {part_idx} ({len(chunks_list)} chunks) to Parquet format...")
+        df_part = pd.DataFrame(chunks_list)
+        df_part.to_parquet(temp_parquet_path, index=False, compression='snappy')
+        
+        file_size = temp_parquet_path.stat().st_size
+        total_uploaded_size += file_size
+        
+        print(f"  Uploading partition {part_idx} ({file_size / (1024*1024):.2f} MB) to Google Drive...")
+        upload_file_to_drive(drive_service, temp_parquet_path, part_name, chunked_dest_folder_id, mime_type="application/octet-stream")
+        
+        # Clean up local file
+        temp_parquet_path.unlink()
+        return len(chunks_list)
+        
     start_time = time.time()
     with gzip.open(local_norm_path, 'rt', encoding='utf-8') as f_in:
         for line in f_in:
@@ -494,8 +530,9 @@ def process_single_file(drive, drive_service, filename, folder_key, keep_local=F
                         continue
                     seen_chunk_hashes.add(text_hash)
                     
-                    # Accumulate chunks
-                    all_chunks.append(chk)
+                    # Accumulate in partition list
+                    partition_chunks.append(chk)
+                    total_chunks_created += 1
                     
                     # Update stats
                     chunk_len = len(chk["text"])
@@ -519,57 +556,32 @@ def process_single_file(drive, drive_service, filename, folder_key, keep_local=F
                     if court:
                         stats["courts"][court] = stats["courts"].get(court, 0) + 1
                         
+                # Check if we should flush the partition
+                if len(partition_chunks) >= CHUNKS_PER_PARTITION:
+                    flush_partition(partition_chunks, partition_index)
+                    partition_chunks = []
+                    partition_index += 1
+                    
             except Exception as e:
                 skipped_docs += 1
                 stats["skipped_reasons"]["parse_error"] = stats["skipped_reasons"].get("parse_error", 0) + 1
                 print(f"    Warning: Error chunking record in {actual_filename}: {e}", file=sys.stderr)
                 
-    elapsed_time = time.time() - start_time
-    total_chunks = len(all_chunks)
-    
-    print(f"  Processed {processed_docs} documents, generated {total_chunks} chunks. Skipped: {skipped_docs}. Duplicates: {duplicate_chunks_count}")
-    
-    if total_chunks == 0:
-        print("  No chunks generated. Skipping file upload.")
-        # If cache is not kept, delete local cache file
-        if not keep_local:
-            local_norm_path.unlink()
-        return {
-            "processed_records": processed_docs,
-            "total_chunks": 0,
-            "legislation_chunks": 0,
-            "judgment_chunks": 0,
-            "other_chunks": 0,
-            "duplicate_chunks": duplicate_chunks_count,
-            "skipped_records": skipped_docs,
-            "chunk_size_dist": [],
-            "stats": stats,
-            "file_size_bytes": 0,
-            "processing_time": elapsed_time
-        }
+    # Flush remaining chunks
+    if partition_chunks:
+        flush_partition(partition_chunks, partition_index)
+        partition_chunks = []
         
-    # Write chunks to local Parquet file
-    print(f"  Writing {total_chunks} chunks to Parquet format...")
-    df = pd.DataFrame(all_chunks)
-    df.to_parquet(local_parquet_path, index=False, compression='snappy')
+    elapsed_time = time.time() - start_time
     
-    # Upload to Google Drive 03_chunked subfolders
-    chunked_root_id = drive.get_or_create_subfolder("03_chunked", drive.root_id)
-    chunked_dest_folder_id = drive.get_or_create_subfolder(folder_key, chunked_root_id)
-    
-    print(f"  Uploading {local_parquet_name} to Google Drive...")
-    upload_file_to_drive(drive_service, local_parquet_path, local_parquet_name, chunked_dest_folder_id, mime_type="application/octet-stream")
-    
-    # Local cleanups
-    file_size_bytes = local_parquet_path.stat().st_size
-    local_parquet_path.unlink()
+    print(f"  Done. Processed {processed_docs} documents, generated {total_chunks_created} chunks in {partition_index} partitions.")
     
     if not keep_local:
         local_norm_path.unlink()
         
     return {
         "processed_records": processed_docs,
-        "total_chunks": total_chunks,
+        "total_chunks": total_chunks_created,
         "legislation_chunks": stats["legislation_chunks"],
         "judgment_chunks": stats["judgment_chunks"],
         "other_chunks": stats["other_chunks"],
@@ -577,7 +589,7 @@ def process_single_file(drive, drive_service, filename, folder_key, keep_local=F
         "skipped_records": stats["skipped_reasons"].get("parse_error", 0) + stats["skipped_reasons"].get("no_valid_chunks", 0),
         "chunk_size_dist": stats["chunk_lengths"],
         "stats": stats,
-        "file_size_bytes": file_size_bytes,
+        "file_size_bytes": total_uploaded_size,
         "processing_time": elapsed_time
     }
 
