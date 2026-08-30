@@ -11,4 +11,5 @@ Credentials.json
 token.json
 temp/
 scratch/
+Data/
 *.log
