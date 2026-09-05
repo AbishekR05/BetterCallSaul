@@ -1,0 +1,17 @@
+{
+  "phase": "2.2",
+  "created_at": "2026-09-05T17:37:08Z",
+  "last_updated": "2026-09-05T17:39:23Z",
+  "total_batches": 1,
+  "completed_batches": 1,
+  "failed_batches": 0,
+  "batches": {
+    "pilot_sampled_chunks": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T17:39:23Z",
+      "error_message": "index 1449 is out of bounds for axis 0 with size 1000",
+      "num_chunks": 1000,
+      "peak_vram_gb": 3.6977338790893555
+    }
+  }
+}
