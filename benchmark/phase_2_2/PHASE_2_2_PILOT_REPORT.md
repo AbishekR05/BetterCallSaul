@@ -53,7 +53,41 @@ Based on the empirical measurements from this pilot run:
 
 ---
 
-## 5. Resumability & Interruption Safety
+## 5. Controlled 50,000-Chunk Pipeline Architecture Benchmark
+
+Per project guidelines, a controlled empirical benchmark was executed on a **50,000-chunk sample** (`sample_50k.parquet`) comparing three streaming pipeline architectures before configuring the production pipeline:
+
+### Empirical Benchmark Results
+
+| Strategy / Architecture | Sustained Throughput | Peak GPU VRAM | Peak RAM | Est. 15.7M Total Time | Stability & Contention Notes | Recommendation Status |
+| :--- | :---: | :---: | :---: | :---: | :--- | :---: |
+| **Strategy 1: Baseline Single Worker (Batch 256, FP16)** | **260.04 c/s** | **3.70 GB** | **14.90 GB** | **16.82 hours** | Zero IPC/GPU lock overhead; 100% stable; 0 OOM risk | **RECOMMENDED (OPTIMAL)** |
+| **Strategy 2: DataLoader Prefetch (`num_workers=2`, `pin_memory=True`)** | **198.47 c/s** | **3.73 GB** | **14.99 GB** | **22.04 hours** | ~24% slower; PyTorch worker IPC string serialization overhead | Not Recommended |
+| **Strategy 3: Dual-Worker Parallel Streams (`multiprocessing`)** | **148.47 c/s** | **7.40 GB** | **15.22 GB** | **29.46 hours** | ~43% slower; Windows WDDM CUDA context-switch lock contention & 2x VRAM duplicate model weights | Not Recommended |
+
+### Architecture Benchmark Analysis & Key Findings
+
+1. **Strategy 1 (Baseline Single Worker FP16) is the Winner:**
+   - Achieves the highest sustained throughput at **260.04 chunks/sec**.
+   - Reduces estimated 15.7M total execution time from ~21.5 hours down to **16.82 hours**.
+   - Uses minimal VRAM (**3.70 GB**), leaving ample headroom on the 8 GB RTX 5060.
+   - Eliminates process synchronization bugs, IPC bottlenecks, and GPU driver lock contention.
+
+2. **Why Strategy 2 (DataLoader Prefetch) Performed Slower:**
+   - Serializing Python string text objects across PyTorch DataLoader worker processes via IPC queues introduces CPU-to-main-thread marshaling overhead.
+
+3. **Why Strategy 3 (Dual-Worker Multiprocessing) Failed to Scale:**
+   - Under Windows WDDM GPU driver architecture, multiple Python processes competing for the same CUDA context incur heavy time-slicing and lock contention.
+   - Each process duplicates model weights in VRAM (3.70 GB x 2 = **7.40 GB VRAM**), approaching the GPU memory limit without any speedup.
+
+### Benchmark Recommendation
+
+> [!IMPORTANT]
+> Based on empirical benchmark evidence, **Strategy 1 (Single Worker, Batch 256, FP16 mixed precision)** is recommended for the production pipeline. Dual-Worker Parallel Streams are **rejected** due to Windows GPU context-switching overhead and double VRAM footprint.
+
+---
+
+## 6. Resumability & Interruption Safety
 
 The pipeline uses [`scripts/manifest_manager.py`](file:///d:/Abishek/scripts/manifest_manager.py) to track status at batch-file granularity (`pending` ➔ `embedding` ➔ `embedded` ➔ `loading` ➔ `loaded`).
 * If interrupted with **Ctrl+C, power loss, or reboot**, the pipeline auto-resets uncommitted transient states and resumes cleanly from the exact last incomplete batch file.
@@ -61,11 +95,12 @@ The pipeline uses [`scripts/manifest_manager.py`](file:///d:/Abishek/scripts/man
 
 ---
 
-## 6. Critical STOP Condition
+## 7. Critical STOP Condition
 
 > [!CAUTION]
 > **STOP.**
 > 
-> Per the project specification in `Phase 2 2 vector index construction.md`, the pilot run and validation suite have completed successfully, and **the full 15.7M dataset run must NOT begin automatically.**
+> Per the project specification in `Phase 2 2 vector index construction.md`, the pilot run, validation suite, and 50,000-chunk benchmark have completed successfully, and **the full 15.7M dataset run must NOT begin automatically.**
 > 
 > This pilot report requires review and manual sign-off before initiating the full 15.7M corpus embedding and database indexing.
+
