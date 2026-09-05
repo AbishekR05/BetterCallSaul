@@ -17,7 +17,7 @@ DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = int(os.getenv("DB_PORT", "5432"))
 DB_NAME = os.getenv("DB_NAME", "bettercallsaul")
 DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "ABISHEK1995")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 def get_connection(dbname=DB_NAME, autocommit=False):
     """Establish and return a connection to PostgreSQL."""
