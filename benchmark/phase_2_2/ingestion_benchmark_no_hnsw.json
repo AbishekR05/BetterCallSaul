@@ -1,0 +1,15 @@
+{
+  "num_chunks": 50000,
+  "batch_duration_sec": 292.8230710029602,
+  "embed_throughput_chunks_sec": 253.24108215637023,
+  "copy_time_sec": 55.57384777069092,
+  "copy_rows_per_sec": 899.7037636535488,
+  "baseline_copy_rows_per_sec": 36.54,
+  "copy_speedup_factor": 24.622434692215347,
+  "end_to_end_throughput_chunks_sec": 170.7515730531169,
+  "peak_vram_gb": 3.6977338790893555,
+  "system_ram_gb": 21.377391815185547,
+  "disk_consumed_mb": 803.83203125,
+  "pre_emb_count": 857584,
+  "post_emb_count": 907584
+}

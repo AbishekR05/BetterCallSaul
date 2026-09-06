@@ -1,9 +1,9 @@
 {
   "phase": "2.2",
   "created_at": "2026-09-05T17:37:08Z",
-  "last_updated": "2026-09-05T17:39:23Z",
-  "total_batches": 1,
-  "completed_batches": 1,
+  "last_updated": "2026-09-06T16:41:25Z",
+  "total_batches": 45,
+  "completed_batches": 44,
   "failed_batches": 0,
   "batches": {
     "pilot_sampled_chunks": {
@@ -12,6 +12,277 @@
       "error_message": "index 1449 is out of bounds for axis 0 with size 1000",
       "num_chunks": 1000,
       "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_central_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:36:19Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 100,
+      "peak_vram_gb": 1.5647382736206055
+    },
+    "filtered_in_cpcb_regulations.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:36:53Z",
+      "num_chunks": 105,
+      "peak_vram_gb": 1.623896598815918
+    },
+    "filtered_in_andaman-nicobar_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:37:10Z",
+      "num_chunks": 2080,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_andhra-pradesh_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:37:30Z",
+      "num_chunks": 3377,
+      "peak_vram_gb": 3.572596549987793
+    },
+    "filtered_in_arunachal-pradesh_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:37:52Z",
+      "num_chunks": 2755,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_assam_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:38:32Z",
+      "num_chunks": 4867,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_bihar_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:39:12Z",
+      "num_chunks": 4923,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_cbic_regulations.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:39:39Z",
+      "num_chunks": 3812,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_chandigarh_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:41:21Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 9379,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_chhattisgarh_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:43:42Z",
+      "num_chunks": 10386,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_dadra-nagar-haveli_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:45:32Z",
+      "num_chunks": 6666,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_delhi_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:46:38Z",
+      "num_chunks": 3856,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_dfs_regulations.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:48:28Z",
+      "num_chunks": 5577,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_dgft_regulations.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:48:49Z",
+      "num_chunks": 1204,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_goa_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:50:23Z",
+      "num_chunks": 5581,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_gujarat_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:51:44Z",
+      "num_chunks": 4431,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_haryana_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:53:18Z",
+      "num_chunks": 4633,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_himachal-pradesh_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:55:22Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 3596,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_irdai_regulations.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:56:13Z",
+      "num_chunks": 4932,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_jammu-kashmir_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-05T18:56:33Z",
+      "num_chunks": 3186,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_jharkhand_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T05:44:27Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 4335,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_karnataka_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T05:45:57Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 7449,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_kerala_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T05:47:32Z",
+      "num_chunks": 4770,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_ladakh_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T05:47:46Z",
+      "num_chunks": 1193,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_lakshadweep_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T05:47:49Z",
+      "num_chunks": 114,
+      "peak_vram_gb": 1.7221784591674805
+    },
+    "filtered_in_law-commission_regulations.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T05:57:34Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 27450,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_madhya-pradesh_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T05:59:12Z",
+      "num_chunks": 6383,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_maharashtra_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T06:02:42Z",
+      "num_chunks": 10726,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_manipur_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T06:03:17Z",
+      "num_chunks": 1932,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_mca_regulations.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T06:07:42Z",
+      "num_chunks": 15042,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_meghalaya_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T06:08:04Z",
+      "num_chunks": 2021,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_mizoram_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T06:08:24Z",
+      "num_chunks": 1116,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_moefcc_regulations.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T06:11:53Z",
+      "num_chunks": 13181,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_nagaland_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T06:12:18Z",
+      "num_chunks": 1849,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_odisha_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T06:13:48Z",
+      "num_chunks": 4168,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_puducherry_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T06:14:42Z",
+      "num_chunks": 3047,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_state-gst_regulations.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T06:22:21Z",
+      "num_chunks": 24853,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_tamil-nadu_legislation.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T06:23:44Z",
+      "num_chunks": 5099,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_trai_regulations.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T06:25:58Z",
+      "num_chunks": 7250,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_kerala_judgments_part_0015.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T07:09:59Z",
+      "num_chunks": 129658,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_kerala_judgments_part_0014.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T12:20:34Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250002,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_kerala_judgments_part_0013.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T15:05:36Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_kerala_judgments_part_0012.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T16:28:39Z",
+      "num_chunks": 250002,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_kerala_judgments_part_0011.parquet": {
+      "status": "embedding",
+      "last_updated": "2026-09-06T16:41:25Z",
+      "error_message": "Interrupted run auto-reset"
     }
   }
 }

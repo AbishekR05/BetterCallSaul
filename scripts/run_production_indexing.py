@@ -109,6 +109,12 @@ def run_production_indexing(limit_batches=None):
 
     # 1. Initialize Database Schema & Extensions
     init_db_schema()
+    
+    # Ensure HNSW index is absent during bulk load to enable 900+ rows/sec COPY throughput
+    with get_connection(autocommit=True) as conn:
+        conn.cursor().execute("DROP INDEX IF EXISTS idx_embeddings_hnsw;")
+        print("[OPTIMIZATION] HNSW vector index dropped to ensure high-speed PostgreSQL COPY bulk ingestion.")
+
 
     # 2. Load Embedding Model
     model, device = load_embedding_model(device="cuda")
@@ -220,6 +226,9 @@ def run_production_indexing(limit_batches=None):
             avg_throughput = total_chunks_processed / max(total_time_elapsed, 0.001)
             sys_ram_gb = get_system_ram_gb()
             
+            _, _, free_disk_bytes = shutil.disk_usage("d:/")
+            free_disk_gb = free_disk_bytes / (1024 ** 3)
+
             # Calculate ETA
             remaining_batches_count = len(pending_batches) - idx
             est_remaining_chunks = remaining_batches_count * 150000  # Avg chunks per batch
@@ -232,11 +241,19 @@ def run_production_indexing(limit_batches=None):
             print(f"    - Sustained Throughput      : {avg_throughput:.2f} chunks/sec")
             print(f"    - Peak GPU VRAM             : {peak_vram:.2f} GB")
             print(f"    - System RAM Usage          : {sys_ram_gb:.2f} GB")
+            print(f"    - D: Drive Free Space       : {free_disk_gb:.2f} GB")
             print(f"    - Remaining Batches         : {remaining_batches_count}")
             print(f"    - Estimated Remaining Time  : {eta_hours:.2f} hours")
 
+            # Disk Space Safety Threshold Check (5 GB Minimum Headroom)
+            if free_disk_gb < 5.0:
+                print(f"\n[CRITICAL WARNING] D: drive free space ({free_disk_gb:.2f} GB) fell below 5.0 GB safety threshold!")
+                print("Pausing indexing safely to prevent disk exhaustion. Manifest state is saved.")
+                break
+
             # Advance prefetch future pointer
             current_future = next_future
+
 
         executor.shutdown(wait=False)
 

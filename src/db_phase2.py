@@ -285,9 +285,12 @@ def bulk_copy_embeddings(conn, embeddings_list):
         """)
 
 def create_hnsw_index(conn, m=16, ef_construction=64):
-    """Build HNSW cosine vector index on embeddings(embedding)."""
+    """Build HNSW cosine vector index on embeddings(embedding) with parallel maintenance workers."""
     with conn.cursor() as cur:
-        print(f"Building HNSW cosine vector index (m={m}, ef_construction={ef_construction})...")
+        print(f"Configuring PostgreSQL session: maintenance_work_mem=4GB, max_parallel_maintenance_workers=6...")
+        cur.execute("SET maintenance_work_mem = '4GB';")
+        cur.execute("SET max_parallel_maintenance_workers = 6;")
+        print(f"Building HNSW cosine vector index (m={m}, ef_construction={ef_construction}) in bcs_tablespace...")
         cur.execute(f"""
             CREATE INDEX IF NOT EXISTS idx_embeddings_hnsw 
             ON embeddings USING hnsw (embedding vector_cosine_ops)
@@ -296,6 +299,7 @@ def create_hnsw_index(conn, m=16, ef_construction=64):
         """)
     conn.commit()
     print("HNSW vector index built successfully!")
+
 
 def create_metadata_indexes(conn):
     """Build B-Tree indexes on relational metadata columns for fast hybrid search filtering."""
