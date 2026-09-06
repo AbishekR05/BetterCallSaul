@@ -146,6 +146,14 @@ def bulk_copy_domains(conn, domain_names):
         mapping = {row[0]: row[1] for row in cur.fetchall()}
     return mapping
 
+def clean_str(val):
+    if val is None:
+        return ''
+    s = str(val)
+    if '\x00' in s:
+        s = s.replace('\x00', '')
+    return s
+
 def bulk_copy_source_documents(conn, docs):
     """
     Bulk load source_documents using PostgreSQL COPY.
@@ -160,22 +168,22 @@ def bulk_copy_source_documents(conn, docs):
     
     for d in docs:
         writer.writerow([
-            d.get('document_id'),
-            d.get('source_type', 'unknown'),
-            d.get('title', ''),
-            d.get('act', ''),
-            d.get('case_name', ''),
-            d.get('citation', ''),
-            d.get('court', ''),
-            d.get('jurisdiction', ''),
-            d.get('level', ''),
-            d.get('state', ''),
-            d.get('date', ''),
-            d.get('effective_date', ''),
-            d.get('is_historical', False),
-            d.get('source_url', ''),
-            d.get('dataset_version', '1.0'),
-            d.get('original_source_id', '')
+            clean_str(d.get('document_id')),
+            clean_str(d.get('source_type', 'unknown')),
+            clean_str(d.get('title', '')),
+            clean_str(d.get('act', '')),
+            clean_str(d.get('case_name', '')),
+            clean_str(d.get('citation', '')),
+            clean_str(d.get('court', '')),
+            clean_str(d.get('jurisdiction', '')),
+            clean_str(d.get('level', '')),
+            clean_str(d.get('state', '')),
+            clean_str(d.get('date', '')),
+            clean_str(d.get('effective_date', '')),
+            bool(d.get('is_historical', False)),
+            clean_str(d.get('source_url', '')),
+            clean_str(d.get('dataset_version', '1.0')),
+            clean_str(d.get('original_source_id', ''))
         ])
     
     buf.seek(0)
@@ -200,7 +208,7 @@ def bulk_copy_document_domains(conn, doc_domains):
     buf = io.StringIO()
     writer = csv.writer(buf, delimiter='\t')
     for doc_id, domain_id in doc_domains:
-        writer.writerow([doc_id, domain_id])
+        writer.writerow([clean_str(doc_id), domain_id])
     buf.seek(0)
     
     with conn.cursor() as cur:
@@ -221,21 +229,22 @@ def bulk_copy_chunks(conn, chunks_list):
     writer = csv.writer(buf, delimiter='\t', quoting=csv.QUOTE_MINIMAL, escapechar='\\')
     
     for c in chunks_list:
+        text_clean = clean_str(c.get('text', ''))
         writer.writerow([
-            c.get('chunk_id'),
-            c.get('document_id'),
-            c.get('parent_id', ''),
+            clean_str(c.get('chunk_id')),
+            clean_str(c.get('document_id')),
+            clean_str(c.get('parent_id', '')),
             c.get('chunk_index', 0),
-            c.get('source_type', 'unknown'),
-            c.get('part', ''),
-            c.get('chapter', ''),
-            c.get('section', ''),
-            c.get('subsection', ''),
-            c.get('clause', ''),
-            c.get('paragraph_number', ''),
-            c.get('text', ''),
-            c.get('char_length', len(c.get('text', ''))),
-            c.get('cross_references', '')
+            clean_str(c.get('source_type', 'unknown')),
+            clean_str(c.get('part', '')),
+            clean_str(c.get('chapter', '')),
+            clean_str(c.get('section', '')),
+            clean_str(c.get('subsection', '')),
+            clean_str(c.get('clause', '')),
+            clean_str(c.get('paragraph_number', '')),
+            text_clean,
+            c.get('char_length', len(text_clean)),
+            clean_str(c.get('cross_references', ''))
         ])
     buf.seek(0)
     
@@ -248,6 +257,7 @@ def bulk_copy_chunks(conn, chunks_list):
             SELECT chunk_id, document_id, parent_id, chunk_index, source_type, part, chapter, section, subsection, clause, paragraph_number, text, char_length, cross_references FROM temp_chunks
             ON CONFLICT (chunk_id) DO NOTHING;
         """)
+
 
 def bulk_copy_embeddings(conn, embeddings_list):
     """

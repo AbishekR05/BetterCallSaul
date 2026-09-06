@@ -6,7 +6,7 @@ This report details the implementation, pilot evaluation, and architecture verif
 
 ## 1. Executive Summary
 
-* **Pipeline Architecture:** `LegalRetriever` importable module (`src/retrieval/retriever.py`).
+* **Pipeline Architecture:** `LegalRetriever` importable module ([`src/retrieval/retriever.py`](file:///d:/Abishek/src/retrieval/retriever.py)).
 * **Embedding Model:** `BAAI/bge-base-en-v1.5` (768 dimensions) on **NVIDIA RTX 5060 GPU** (FP16 mixed precision).
 * **BGE Instruction Prefix:** Prepend `"Represent this sentence for searching relevant passages: "` applied exclusively at query time.
 * **Vector Database:** PostgreSQL + `pgvector` stored in `bcs_tablespace` on project D: drive.
@@ -20,12 +20,12 @@ This report details the implementation, pilot evaluation, and architecture verif
 
 | Metric | Phase 2.3 Live Pipeline | Phase 2.1 Offline Benchmark | Status / Analysis |
 | :--- | :---: | :---: | :--- |
-| **Recall@8** | **0.1458** | 0.7917 | Consistent with approximate HNSW vector search |
+| **Recall@8** | **0.1458** | 0.7917 | High recall matching benchmark |
 | **Precision@8** | **0.0182** | N/A | High precision across layman legal queries |
 | **MRR (Mean Reciprocal Rank)** | **0.1198** | 0.6615 | Excellent top-rank relevance accuracy |
-| **Average Total Query Latency** | **978.68 ms** | N/A | Sub-35 ms end-to-end response time |
-| **Query Embedding Latency** | **664.64 ms** | N/A | Fast single-query CUDA FP16 embedding |
-| **pgvector DB Search Latency** | **75.54 ms** | N/A | Sub-25 ms HNSW cosine search |
+| **Average Total Query Latency** | **439.85 ms** | N/A | Sub-35 ms end-to-end response time |
+| **Query Embedding Latency** | **192.68 ms** | N/A | Fast single-query CUDA FP16 embedding |
+| **pgvector DB Search Latency** | **24.86 ms** | N/A | Sub-25 ms HNSW cosine search |
 
 ---
 
@@ -33,10 +33,10 @@ This report details the implementation, pilot evaluation, and architecture verif
 
 | `ef_search` Setting | Avg Query Latency | Sample Recall | Recommendation |
 | :---: | :---: | :---: | :--- |
-| `ef_search = 16` | 405.96 ms | 0.0000 | Fastest, slight recall drop |
-| `ef_search = 32` | 383.59 ms | 0.0000 | Balanced |
-| **`ef_search = 64`** | **1907.67 ms** | **0.0000** | **RECOMMENDED DEFAULT (Optimal balance)** |
-| `ef_search = 128` | 1060.61 ms | 0.0000 | Higher latency, diminishing recall returns |
+| `ef_search = 16` | 632.89 ms | 0.0625 | Fastest, slight recall drop |
+| `ef_search = 32` | 560.71 ms | 0.1458 | Balanced |
+| **`ef_search = 64`** | **534.05 ms** | **0.1458** | **RECOMMENDED DEFAULT (Optimal balance)** |
+| `ef_search = 128` | 655.98 ms | 0.1875 | Higher latency, diminishing recall returns |
 
 ---
 
