@@ -1,0 +1,25 @@
+{
+  "run_id": "regression_1788690716",
+  "run_mode": "closed_world_regression",
+  "timestamp_utc": "2026-09-06T10:31:56.263259",
+  "eval_dataset_version": "p21_48_queries",
+  "ground_truth_version": "p21_relevance_judgments",
+  "corpus_snapshot": {
+    "chunks_row_count": 357582,
+    "embeddings_row_count": 357582,
+    "source_documents_row_count": 278540,
+    "snapshot_taken_at": "2026-09-06T10:31:56.263111"
+  },
+  "embedding_model": "BAAI/bge-base-en-v1.5",
+  "index_config": {
+    "index_type": "HNSW",
+    "m": 16,
+    "ef_construction": 64,
+    "ef_search": 64,
+    "distance_metric": "cosine"
+  },
+  "retriever_code_version": "main",
+  "harness_code_version": "p24_v1",
+  "random_seed": 42,
+  "reproducible_command": "python -m eval.run --mode regression"
+}

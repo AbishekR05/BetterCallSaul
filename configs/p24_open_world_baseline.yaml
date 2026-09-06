@@ -1,0 +1,9 @@
+# configs/p24_open_world_baseline.yaml
+run_mode: "open_world"
+eval_dataset_path: "d:/Abishek/eval/queries/p24_queries_v1.jsonl"
+output_dir: "d:/Abishek/benchmark/phase_2_4"
+top_k_values: [5, 8, 10, 20]
+vector_candidate_k: 30
+keyword_candidate_k: 15
+ef_search: 64
+random_seed: 42

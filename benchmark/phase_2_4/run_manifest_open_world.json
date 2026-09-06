@@ -1,0 +1,25 @@
+{
+  "run_id": "open_world_1788691045",
+  "run_mode": "open_world",
+  "timestamp_utc": "2026-09-06T10:37:25.806421",
+  "eval_dataset_version": "p24_queries_v1",
+  "ground_truth_version": "ground_truth_v1",
+  "corpus_snapshot": {
+    "chunks_row_count": 357582,
+    "embeddings_row_count": 357582,
+    "source_documents_row_count": 278540,
+    "snapshot_taken_at": "2026-09-06T10:37:25.805962"
+  },
+  "embedding_model": "BAAI/bge-base-en-v1.5",
+  "index_config": {
+    "index_type": "HNSW",
+    "m": 16,
+    "ef_construction": 64,
+    "ef_search": 64,
+    "distance_metric": "cosine"
+  },
+  "retriever_code_version": "main",
+  "harness_code_version": "p24_v1",
+  "random_seed": 42,
+  "reproducible_command": "python -m eval.run --mode open_world"
+}
