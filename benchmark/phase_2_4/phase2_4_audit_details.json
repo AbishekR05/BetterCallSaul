@@ -1,0 +1,257 @@
+{
+  "dataset_summary": {
+    "total_queries": 160,
+    "unique_query_ids": 160,
+    "unique_query_texts": 160,
+    "procedure_related_count": 30,
+    "domain_counts": {
+      "Employment & Labour": 12,
+      "Consumer Protection": 11,
+      "Property Law": 11,
+      "Family Law": 11,
+      "Criminal Law": 11,
+      "Banking & Finance": 11,
+      "Constitutional Rights": 11,
+      "Contracts & Agreements": 10,
+      "Cyber Law / Digital Law": 10,
+      "Workplace Rights": 9,
+      "Motor Vehicles / Traffic": 9,
+      "Taxation": 9,
+      "Company / Corporate Law": 9,
+      "Business & Entrepreneurship": 9,
+      "Intellectual Property": 9,
+      "Environmental Law": 8
+    },
+    "query_type_counts": {
+      "easy": 50,
+      "legislation_focused": 40,
+      "judgment_focused": 34,
+      "mixed_legislation_judgment": 13,
+      "jurisdiction_sensitive": 12,
+      "moderately_ambiguous": 8,
+      "no_evidence_expected": 1,
+      "clarification_required": 1,
+      "multi_concept": 1
+    },
+    "jurisdiction_counts": {
+      "central_only": 141,
+      "jurisdiction_ambiguous": 13,
+      "state_specific: Karnataka": 3,
+      "state_specific: Maharashtra": 2,
+      "state_specific: Delhi": 1
+    },
+    "difficulty_counts": {
+      "colloquial_phrasing": 1,
+      "wrong_act_or_title_cited": 1,
+      "misspelling_and_vague": 1,
+      "no_evidence_in_corpus": 1,
+      "missing_jurisdiction": 1,
+      "multi_concept_mixing": 1,
+      "named_entity_search": 1,
+      "vague_layman_wording": 1,
+      "procedural_legal_aid": 1
+    }
+  },
+  "ground_truth_records_count": 1600,
+  "authentic_gt_records_count": 3196,
+  "out_of_scope_audit": [
+    {
+      "query_id": "p24-diff-004",
+      "query_text": "Can I return food ordered on Swiggy if delivery was late by 2 hours?",
+      "expected": "Insufficiency Triggered (high_conf=False)",
+      "actual_high_confidence": true,
+      "top_retrieved": [
+        {
+          "chunk_id": "efc747c658a3a02cbab24b1b863b8fd0",
+          "score": 0.5888388647033179,
+          "confidence_tier": "high",
+          "title": "New Faq On Gst Second Edition",
+          "snippet": "[Act: New Faq On Gst Second Edition]\n\n## **Q 11. What happens if the job worker does not return the goods within the spe"
+        },
+        {
+          "chunk_id": "cdabca519a388e70b93396669403a4e4",
+          "score": 0.5705769062042236,
+          "confidence_tier": "high",
+          "title": "New Faq On Gst Second Edition",
+          "snippet": "[Act: New Faq On Gst Second Edition]\n\n- _(i) the goods are taxable under the GST Law; and (ii) the buyer is registered u"
+        },
+        {
+          "chunk_id": "10561cea0710678cfa7d6e59d28feae5",
+          "score": 0.5644260048866272,
+          "confidence_tier": "high",
+          "title": "Kgst Rules",
+          "snippet": "[Act: Kgst Rules]\n\nChapter XVI: E-way Rules** | Section 9(9): Substitution of rule 138 (9) Where an e-way bill has been "
+        }
+      ]
+    }
+  ],
+  "jurisdiction_audit": [
+    {
+      "query_id": "p24-employment-003",
+      "expected_state": "Karnataka",
+      "retrieved_top_5": [
+        {
+          "jurisdiction": "state",
+          "state": "Jharkhand",
+          "title": "The JHARKHAND SHOPS AND ESTABLISHMENT LAWS"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Assam",
+          "title": "The Assam Shops and Establishments Act, 1971 (Act 21 of 1971)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Karnataka",
+          "title": "The KARNATAKA SHOPS AND COMMERCIAL ESTABLISHMENTS ACT, 1961 (Act 8 of 1961)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Assam",
+          "title": "The Assam Shops and Establishments Act, 1971 (Act 21 of 1971)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Gujarat",
+          "title": "The Bombay Shops and Establishments Act, 1948 (Act 79 of 1948)"
+        }
+      ]
+    },
+    {
+      "query_id": "p24-workplace-009",
+      "expected_state": "Maharashtra",
+      "retrieved_top_5": [
+        {
+          "jurisdiction": "state",
+          "state": "Maharashtra",
+          "title": "The Maharashtra Shops and Establishments (Regulation of Employment and Conditions of Service) Act, 2017 (Act 61 of 2017)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Karnataka",
+          "title": "The KARNATAKA SHOPS AND COMMERCIAL ESTABLISHMENTS ACT, 1961 (Act 8 of 1961)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Karnataka",
+          "title": "The KARNATAKA SHOPS AND COMMERCIAL ESTABLISHMENTS ACT, 1961 (Act 8 of 1961)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Manipur",
+          "title": "The FACTORIES ACT, 1948 (Act 63 of 1948)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Maharashtra",
+          "title": "The Factories Act, 1948 (Act 63 of 1948)"
+        }
+      ]
+    },
+    {
+      "query_id": "p24-property-003",
+      "expected_state": "Maharashtra",
+      "retrieved_top_5": [
+        {
+          "jurisdiction": "state",
+          "state": "Maharashtra",
+          "title": "The Maharashtra Rent Control Act, 1999 (Act 18 of 1999)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Maharashtra",
+          "title": "The Maharashtra Rent Control Act, 1999 (Act 18 of 1999)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Maharashtra",
+          "title": "The Maharashtra Rent Control Act, 1999 (Act 18 of 1999)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Maharashtra",
+          "title": "The Maharashtra Rent Control Act, 1999 (Act 18 of 1999)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Maharashtra",
+          "title": "The Maharashtra Rent Control Act, 1999 (Act 18 of 1999)"
+        }
+      ]
+    },
+    {
+      "query_id": "p24-property-007",
+      "expected_state": "Delhi",
+      "retrieved_top_5": [
+        {
+          "jurisdiction": "state",
+          "state": "Jammu Kashmir",
+          "title": "The JAMMU AND KASHMIR METROPOLITAN REGION DEVELOPMENT AUTHORITES Act, 2018 (Act 49 of 2018)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Jammu Kashmir",
+          "title": "The STAMP ACT, 1977 (1920 A. D.) (Act 40 of 1977)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Jammu Kashmir",
+          "title": "The STAMP ACT, 1977 (1920 A. D.) (Act 40 of 1977)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Nagaland",
+          "title": "The Indian Stamp Duty (Nagaland Amendment) Act,1989 (Act 6 of 1989)"
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Haryana",
+          "title": "The Panchkula Metropolitan Development Authority Act, 2021 (Act 23 of 2021)"
+        }
+      ]
+    },
+    {
+      "query_id": "p24-biz-005",
+      "expected_state": "Karnataka",
+      "retrieved_top_5": [
+        {
+          "jurisdiction": "state",
+          "state": "Maharashtra",
+          "title": "The Maharashtra Warehouses Act."
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Maharashtra",
+          "title": "The Mumbai Municipal Corporation Act."
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Maharashtra",
+          "title": "The Maharashtra Municipal Corporations Act."
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Maharashtra",
+          "title": "The Maharashtra Municipal Corporations Act."
+        },
+        {
+          "jurisdiction": "state",
+          "state": "Arunachal Pradesh",
+          "title": "The ARUNACHAL PRADESH MUNICIPAL CORPORATION ACT, 2019 (Act 9 of 2019)"
+        }
+      ]
+    }
+  ],
+  "latency_breakdown": {
+    "preprocessing_ms": 0.01621246337890625,
+    "query_embedding_ms": 38.63938649495443,
+    "database_search_ms": 56.23356501261393,
+    "postprocessing_ms": 0.21664301554361978,
+    "total_end_to_end_ms": 303.994099299113,
+    "p50_total_ms": 294.26097869873047,
+    "p95_total_ms": 328.185772895813,
+    "p99_total_ms": 331.2013101577759,
+    "min_total_ms": 285.7661247253418,
+    "max_total_ms": 331.9551944732666
+  }
+}

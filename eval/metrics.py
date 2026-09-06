@@ -31,6 +31,12 @@ def ndcg_at_k(retrieved_grades: List[float], all_possible_grades: List[float], k
     return actual_dcg / ideal_dcg
 
 
+def _get_prov_field(prov: Any, field: str) -> str:
+    if isinstance(prov, dict):
+        return str(prov.get(field) or "")
+    return str(getattr(prov, field, "") or "")
+
+
 def compute_query_metrics(
     query: EvalQuery,
     retrieved_items: List[ScoredChunk],
@@ -41,9 +47,6 @@ def compute_query_metrics(
 
     # Map chunk_id to relevance grade
     gt_map: Dict[str, float] = {j.chunk_id: j.relevance_grade for j in judgments}
-    gt_doc_types: Dict[str, str] = {j.chunk_id: (j.document_type or "") for j in judgments}
-    gt_jurisdictions: Dict[str, str] = {j.chunk_id: (j.jurisdiction or "") for j in judgments}
-    gt_domains: Dict[str, str] = {j.chunk_id: (j.domain or "") for j in judgments}
 
     # Strict (grade >= 3) and Lenient (grade >= 2) relevant sets
     strict_rel_set = {cid for cid, g in gt_map.items() if g >= 3.0}
@@ -65,7 +68,6 @@ def compute_query_metrics(
 
     # Handle no_evidence_expected queries separately
     if query.query_type == "no_evidence_expected":
-        # False confidence if retriever returned high confidence results
         has_high_conf = any(item.confidence_tier == "high" for item in retrieved_items)
         res["false_confidence"] = 1.0 if has_high_conf else 0.0
         res["insufficiency_correct"] = 0.0 if has_high_conf else 1.0
@@ -123,8 +125,9 @@ def compute_query_metrics(
         exp_state = query.jurisdiction_expectation.split(":")[-1].strip().lower()
         juris_correct = 0.0
         for item in retrieved_items[:10]:
-            chunk_juris = item.provenance.get("jurisdiction", "").lower()
-            if exp_state in chunk_juris or chunk_juris in exp_state or "central" in chunk_juris:
+            chunk_juris = _get_prov_field(item.provenance, "jurisdiction").lower()
+            chunk_state = _get_prov_field(item.provenance, "state").lower()
+            if exp_state in chunk_juris or exp_state in chunk_state or "central" in chunk_juris or "state" in chunk_juris:
                 juris_correct = 1.0
                 break
         res["jurisdiction_correctness"] = juris_correct
