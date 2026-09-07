@@ -90,45 +90,87 @@ Evaluated 4 candidate embedding models on a stratified sample of 1,000 chunks (5
 
 * **Final Recommendation:** **`BAAI/bge-base-en-v1.5`** is recommended for production. It achieves the highest **MRR (0.6615)** and **Recall@10 (0.7917)** on legal queries with a highly viable indexing footprint.
 
+### 🔹 Phase 2.2: Vector Index Construction & Production Ingestion (Completed)
+- Designed a production-grade, resumable, manifest-gated batch embedding and ingestion pipeline (`src/db_phase2.py`, `scripts/build_vector_index.py`, `scripts/run_production_indexing.py`).
+- Utilized PostgreSQL `COPY`-based bulk insertion with deferred HNSW index construction (`m=16`, `ef_construction=64`) on `bge-base-en-v1.5` (768-dim) vectors.
+- Achieved **~510 chunks/sec COPY throughput** on local GPU (`NVIDIA RTX 5060`).
+
+### 🔹 Phase 2.3: Read-Only Modular Hybrid Retrieval Pipeline (Completed)
+- Implemented a clean, read-only retrieval engine (`src/retrieval/retriever.py`) separating vector search, filtering, and candidate deduplication.
+- Enforced query-side BGE instruction prefixing (`"Represent this sentence for searching relevant passages: "`) and structured legal provenance tracking.
+
+### 🔹 Phase 2.4: Open-World Retrieval Evaluation Framework (Completed)
+- Constructed a 160-query open-world legal evaluation dataset (`eval/queries/p24_queries_v1.jsonl`) and non-circular human-audited ground truth judgments (`ground_truth_v1_audited.jsonl`).
+- Built dual evaluation modes: closed-world regression harness and open-world production evaluation (`eval/harness.py`, `eval/metrics.py`, `scripts/audit_phase2_4_framework.py`).
+
+### 🔹 Phase 2.5: Modular Retrieval Optimization Suite (Completed)
+Implemented and benchmarked 5 experimental retrieval optimizations using pluggable `RetrieverAdapter` modules (`src/retrieval/`):
+1. **Full-Text BM25 Lexical Search (`lexical.py`):** High-performance 2-stage PostgreSQL cover-density search (<20ms query latency).
+2. **Hybrid Candidate Fusion (`fusion.py`):** Reciprocal Rank Fusion (RRF $k=60$) & Min-Max Weighted Score Fusion.
+3. **Cross-Encoder Reranking (`reranker.py`):** Deep logit re-ranking via `BAAI/bge-reranker-base` on CUDA GPU (~1.5s per query).
+4. **Confidence Calibration (`confidence.py`):** Empirical score thresholding suppressing false confidence on out-of-scope queries (0.0% false confidence rate).
+5. **Jurisdiction Boosting (`jurisdiction_filter.py`):** Soft multiplicative score boosting (1.15x) for central vs. state statutory alignment.
+
 ---
 
 ## 📁 Project Structure
 
 ```
 BetterCallSaul/
-├── benchmark/
-│   └── phase_2_1/              # Embedding benchmark data, samples, and reports
-│       ├── PHASE_2_1_BENCHMARK_REPORT.md
-│       ├── eval_queries.jsonl
-│       ├── relevance_judgments.jsonl
-│       └── sampled_chunks.parquet
-├── config/
+├── benchmark/                  # Benchmark datasets, reports, and run logs
+│   ├── phase_2_1/              # Phase 2.1 embedding selection benchmark
+│   ├── phase_2_2/              # Phase 2.2 vector ingestion & 50k benchmark reports
+│   ├── phase_2_3/              # Phase 2.3 retrieval pipeline audit reports
+│   ├── phase_2_4/              # Phase 2.4 evaluation framework & open-world baseline
+│   └── phase_2_5/              # Phase 2.5 retrieval optimization suite report & results
+├── config/                     # Domain mappings & environment configs
 │   └── domain_mapping.json     # Rule mapping for layman-relevant domains
-├── Data/
-│   └── Raw/
-│       └── Consumer/           # Local PDF documents (acts/rules)
-├── Docs/                       # Comprehensive specifications and reports
-│   ├── PHASE_1B_REPORT.md
-│   ├── PHASE_1C_REPORT.md
+├── configs/                    # Experiment configuration files
+│   ├── p24_open_world_baseline.yaml
+│   └── p24_regression.yaml
+├── Data/                       # Local data directories
+├── Docs/                       # Comprehensive specifications and phase reports
 │   ├── Phase1/                 # Phase 1.x detailed analysis
-│   └── Phase2/                 # Phase 2.x embedding & retrieval evaluations
-├── scripts/                    # Ingestion, processing, and benchmarking scripts
-│   ├── acquire_open_india_law.py # Resilient data scraping & GDrive backup
-│   ├── normalize_corpus.py     # Cleansing & domain inspection
-│   ├── chunk_corpus.py         # Structure-aware chunking pipeline
-│   ├── draw_sample.py          # Stratified sampling for evaluation
-│   └── benchmark_embeddings.py # GPU-based embedding benchmarking
+│   └── Phase2/                 # Phase 2.1 - 2.5 technical specifications & specs
+├── eval/                       # Phase 2.4 & 2.5 Evaluation Framework
+│   ├── annotation_tool.py      # Ground-truth annotation assistant
+│   ├── harness.py              # Evaluation runner & adapter executor
+│   ├── metrics.py              # Precision, Recall, MRR, nDCG, hit rate metrics
+│   ├── pooling.py              # Candidate pooling & depth sampling
+│   ├── report_builder.py       # Evaluation markdown report generator
+│   ├── run.py                  # Evaluation CLI entrypoint
+│   └── schemas.py              # Evaluation schemas & data classes
+├── scripts/                    # Ingestion, processing, evaluation, and pipeline scripts
+│   ├── build_vector_index.py   # Vector table initialization & HNSW creation
+│   ├── run_production_indexing.py # Background batch embedding & COPY ingestion
+│   ├── audit_phase2_4_framework.py # Framework audit script
+│   ├── run_audited_open_world_eval.py # Open-world evaluation runner
+│   └── run_p25_experiments.py  # Phase 2.5 optimization experiment runner
 ├── src/                        # Core Application Source Code
+│   ├── db_phase2.py            # Normalized Phase 2 PostgreSQL schema & COPY helpers
+│   ├── retrieval/              # Modular Retrieval Engine (Phase 2.3 - 2.5)
+│   │   ├── adapters.py         # Pluggable RetrieverAdapter registry
+│   │   ├── candidate_pool.py   # Candidate merging & provenance tracking
+│   │   ├── confidence.py       # Empirical confidence calibrator
+│   │   ├── config.py           # Retrieval configuration settings
+│   │   ├── embedding.py        # BGE embedding provider & query prefixing
+│   │   ├── filters.py          # Metadata & structured filtering
+│   │   ├── fusion.py           # RRF & Min-Max Weighted fusion
+│   │   ├── jurisdiction_filter.py # Soft jurisdiction score booster
+│   │   ├── lexical.py          # PostgreSQL BM25 Cover-Density FTS engine
+│   │   ├── reranker.py         # BAAI/bge-reranker-base Cross-Encoder
+│   │   ├── retriever.py        # Frozen Baseline Retriever
+│   │   └── search.py           # Low-level pgvector similarity search
 │   ├── app.py                  # FastAPI server endpoints
-│   ├── config.py               # Environment configuration settings
-│   ├── db.py                   # DB connection, tables setup, pgvector schema
-│   ├── generator.py            # LLM interface (Gemini/Ollama/HF) & citations
-│   ├── ingestion.py            # Document parsing (PyMuPDF) and initial loading
-│   └── retrieval.py            # Hybrid Search (FTS + Vector) via RRF
+│   ├── config.py               # Application configuration
+│   └── generator.py            # LLM interface (Gemini/Ollama/HF) & citations
+├── tests/                      # Unit & Functional Test Suite
+│   ├── eval/                   # Metrics & harness unit tests
+│   ├── retrieval/              # Retrieval module unit tests
+│   └── run_all_tests.py        # Unified test suite runner
 ├── .env.example                # Env template file
 ├── .gitignore                  # Git ignore patterns
-├── install_pgvector.ps1        # Helper to build/install pgvector on Windows
-├── requirements.txt            # Python requirements
+├── requirements.txt            # Python dependencies
 ├── main.py                     # Entrypoint CLI
 └── README.md                   # Project Documentation
 ```
