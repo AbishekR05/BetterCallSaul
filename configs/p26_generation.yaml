@@ -1,0 +1,28 @@
+# configs/p26_generation.yaml
+# Phase 2.6 Grounded RAG Answer Generation Configuration
+
+llm:
+  provider: "gemini"               # gemini | mock
+  model: "gemini-1.5-flash"        # Default Gemini model
+  temperature: 0.1
+  max_tokens: 1024
+  max_retries: 1
+  backoff_seconds: 1.0
+
+context:
+  max_context_chunks: 8
+  max_context_tokens: 2048
+  min_confidence_tier: "high"      # Filter out 'low' confidence unless only evidence available
+
+pricing:
+  # USD per 1,000 tokens
+  gemini:
+    prompt_token_cost_per_1k: 0.000075
+    completion_token_cost_per_1k: 0.000300
+  mock:
+    prompt_token_cost_per_1k: 0.0
+    completion_token_cost_per_1k: 0.0
+
+logging:
+  log_full_context: false
+  log_file: "benchmark/phase_2_6/generation_events.jsonl"
