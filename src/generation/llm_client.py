@@ -1,7 +1,7 @@
 # src/generation/llm_client.py
 """
 LLM Client Protocol and Implementations for Phase 2.6 (§4).
-Supports GeminiClient (API-based) and MockLLMClient (deterministic testing).
+Supports GeminiClient (API/SDK-based) and MockLLMClient (deterministic testing).
 """
 
 import os
@@ -9,7 +9,11 @@ import time
 import json
 import requests
 from typing import Protocol, Optional, Dict, Any
+from dotenv import load_dotenv
 from src.generation.schemas import LLMResponse
+
+# Load environment variables
+load_dotenv()
 
 
 class LLMClient(Protocol):
@@ -27,12 +31,20 @@ class LLMClient(Protocol):
 
 class GeminiClient:
     """
-    Gemini API implementation wrapping Google Generative Language API (§4.2).
+    Gemini API implementation wrapping Google GenAI SDK with REST fallback (§4.2).
     """
 
-    def __init__(self, model_name: str = "gemini-1.5-flash", api_key: Optional[str] = None):
+    def __init__(self, model_name: str = "gemini-3.5-flash", api_key: Optional[str] = None):
         self.model_name = model_name
         self.api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        self.client = None
+
+        if self.api_key:
+            try:
+                from google import genai
+                self.client = genai.Client(api_key=self.api_key)
+            except Exception:
+                self.client = None
 
     def generate(
         self,
@@ -47,20 +59,54 @@ class GeminiClient:
         if not self.api_key:
             raise ValueError("Gemini API key not found in environment (GEMINI_API_KEY / GOOGLE_API_KEY).")
 
-        # Use REST Endpoint for maximum portability
+        full_prompt = f"{system_prompt}\n\n{user_prompt}"
+
+        # 1. Try google-genai SDK if initialized
+        if self.client:
+            try:
+                from google.genai import types
+                config = types.GenerateContentConfig(
+                    temperature=temperature,
+                    max_output_tokens=max_tokens
+                )
+                res = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=full_prompt,
+                    config=config
+                )
+                elapsed_ms = (time.time() - start_time) * 1000.0
+
+                raw_text = res.text or ""
+                prompt_tokens = len(full_prompt) // 4
+                completion_tokens = len(raw_text) // 4
+                if hasattr(res, 'usage_metadata') and res.usage_metadata:
+                    prompt_tokens = getattr(res.usage_metadata, 'prompt_token_count', prompt_tokens)
+                    completion_tokens = getattr(res.usage_metadata, 'candidates_token_count', completion_tokens)
+
+                return LLMResponse(
+                    raw_text=raw_text,
+                    prompt_tokens=prompt_tokens,
+                    completion_tokens=completion_tokens,
+                    latency_ms=elapsed_ms,
+                    model_name=self.model_name,
+                    model_version="3.5",
+                    finish_reason="STOP"
+                )
+            except Exception as sdk_err:
+                print(f"[GeminiClient SDK Warning] {sdk_err}. Falling back to REST API...")
+
+        # 2. REST Endpoint Fallback
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
         headers = {"Content-Type": "application/json"}
-        
         payload = {
             "contents": [{
                 "parts": [{
-                    "text": f"{system_prompt}\n\n{user_prompt}"
+                    "text": full_prompt
                 }]
             }],
             "generationConfig": {
                 "temperature": temperature,
-                "maxOutputTokens": max_tokens,
-                "responseMimeType": "application/json"
+                "maxOutputTokens": max_tokens
             }
         }
 
@@ -79,7 +125,7 @@ class GeminiClient:
         raw_text = parts[0].get("text", "") if parts else ""
 
         usage = data.get("usageMetadata", {})
-        prompt_tokens = usage.get("promptTokenCount", len(system_prompt + user_prompt) // 4)
+        prompt_tokens = usage.get("promptTokenCount", len(full_prompt) // 4)
         completion_tokens = usage.get("candidatesTokenCount", len(raw_text) // 4)
 
         return LLMResponse(
@@ -88,7 +134,7 @@ class GeminiClient:
             completion_tokens=completion_tokens,
             latency_ms=elapsed_ms,
             model_name=self.model_name,
-            model_version="1.0",
+            model_version="3.5",
             finish_reason=candidate.get("finishReason", "STOP")
         )
 
@@ -100,6 +146,7 @@ class MockLLMClient:
 
     def __init__(self, canned_response_mode: str = "sufficient"):
         self.canned_response_mode = canned_response_mode
+        self.model_name = "mock-model"
 
     def generate(
         self,

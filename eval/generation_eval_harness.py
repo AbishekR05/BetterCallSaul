@@ -63,8 +63,8 @@ def run_generation_evaluation(
     retriever_adapter = JurisdictionBoostedAdapter()
 
     if use_gemini:
-        print("Using real Gemini API client (GeminiClient)...")
-        llm_client = GeminiClient(model_name="gemini-1.5-flash")
+        print("Using real Gemini API client (GeminiClient with gemini-3.5-flash)...")
+        llm_client = GeminiClient(model_name="gemini-3.5-flash")
     else:
         print("Using Mock LLM client (MockLLMClient)...")
         llm_client = MockLLMClient(canned_response_mode="sufficient")
@@ -96,7 +96,7 @@ def run_generation_evaluation(
     print(f"Running evaluation over {total_queries} queries...")
 
     for idx, q in enumerate(queries, start=1):
-        if idx % 20 == 0 or idx == total_queries:
+        if idx % 10 == 0 or idx == total_queries:
             print(f"[{idx}/{total_queries}] Evaluating query: '{q.query_text[:40]}...'")
 
         # Step A: Retrieval
@@ -192,74 +192,15 @@ def run_generation_evaluation(
     mean_completion_tokens = float(np.mean(completion_tokens_list))
     total_cost_usd = float(np.sum(costs_list))
 
-    # Generate Report Markdown
-    report_content = f"""# Phase 2.6 Grounded RAG Answer Generation — Evaluation Report
-
-**Date:** {time.strftime('%B %d, %A, %Y')}  
-**Evaluation Dataset:** `p24_queries_v1.jsonl` ({total_queries} Open-World Legal Queries)  
-**LLM Client Used:** `{'GeminiClient (gemini-1.5-flash)' if use_gemini else 'MockLLMClient (deterministic)'}`  
-**Prompt Version:** `p26_v1`  
-**Status:** Evaluation Complete & Verified  
-
----
-
-## 1. Executive Summary
-
-Phase 2.6 establishes the grounded RAG answer generation layer that transforms Phase 2.5's retrieved evidence passages into plain-English, source-cited, and legal-awareness framed answers.
-
-### Core Metrics Summary
-
-| Metric | Measured Value | Standard / Expectation | Status |
-|---|---|---|---|
-| **Citation Validity Rate** | **{citation_validity_rate:.1f}%** ({valid_citation_count}/{total_citation_count}) | 100.0% (Structural Guarantee) | ✅ PASSED |
-| **Insufficient-Evidence Honesty Rate** | **{insufficient_honesty_rate:.1f}%** ({honest_insufficient_count}/{no_evidence_query_count}) | Baseline Established | ✅ PASSED |
-| **Jurisdiction Correctness Rate** | **{jurisdiction_accuracy_rate:.1f}%** ({jurisdiction_matched_count}/{jurisdiction_evaluable_count}) | High Alignment | ✅ PASSED |
-| **Parse Failure Rate** | **{parse_failure_rate:.1f}%** ({parse_failure_count}/{total_queries}) | 0.0% Target | ✅ PASSED |
-| **P95 Generation Latency** | **{p95_gen_latency:.1f} ms** | Sub-2.0s | ✅ PASSED |
-| **P95 Total Pipeline Latency** | **{p95_total_latency:.1f} ms** | Retrieval + Generation | ✅ PASSED |
-
----
-
-## 2. Detailed Performance & Telemetry Breakdown
-
-### 2.1 Latency Performance
-* **Generation Latency (Mean):** {mean_gen_latency:.1f} ms
-* **Generation Latency (P50 Median):** {p50_gen_latency:.1f} ms
-* **Generation Latency (P95):** {p95_gen_latency:.1f} ms
-* **Total Pipeline Latency (Mean):** {mean_total_latency:.1f} ms
-* **Total Pipeline Latency (P95):** {p95_total_latency:.1f} ms
-
-### 2.2 Token Usage & Cost Profile
-* **Mean Prompt Tokens per Query:** {mean_prompt_tokens:.1f} tokens
-* **Mean Completion Tokens per Query:** {mean_completion_tokens:.1f} tokens
-* **Total Estimated Evaluation USD Cost:** ${total_cost_usd:.6f}
-
----
-
-## 3. Safety & Grounding Validation Checks
-
-1. **Evidence-Closed Prompting (`p26_v1`):** System prompt strictly prohibits parametric memory hallucination and enforces citation tags `[E1]`, `[E2]`.
-2. **Post-Hoc Grounding Verification (`grounding_checker.py`):** Automatically scans output for uncited factual assertions (section numbers, dates, fine amounts) and appends `safety_flags`.
-3. **Legal Awareness Framing:** Automatically appends professional consultation caveats for any query with partial or insufficient evidence.
-
----
-
-## 4. Phase 2.6 Acceptance & Sign-off Recommendation
-
-Phase 2.6 Grounded RAG Answer Generation has satisfied all §13.2 acceptance criteria:
-1. All unit tests passed cleanly (`pytest tests/generation/`).
-2. Citation validity rate achieved **100%** structural guarantee.
-3. Insufficient evidence detection cleanly handles out-of-scope queries without hallucination.
-4. Modular `LLMClient` protocol verified swappable between `MockLLMClient` and `GeminiClient`.
-5. Zero modifications made to Phase 2.3 or 2.5 retrieval codebase.
-"""
-
-    with open(REPORT_PATH, "w", encoding="utf-8") as f:
-        f.write(report_content)
-
-    print("\n==================================================")
-    print(f"EVALUATION COMPLETE! Report written to: {REPORT_PATH}")
-    print("==================================================")
+    print(f"\n==================================================")
+    print(f"EVALUATION COMPLETE ({total_queries} queries)")
+    print(f"  - Citation Validity: {citation_validity_rate:.1f}% ({valid_citation_count}/{total_citation_count})")
+    print(f"  - Jurisdiction Correctness: {jurisdiction_accuracy_rate:.1f}% ({jurisdiction_matched_count}/{jurisdiction_evaluable_count})")
+    print(f"  - Insufficient Honesty: {insufficient_honesty_rate:.1f}% ({honest_insufficient_count}/{no_evidence_query_count})")
+    print(f"  - Mean Gen Latency: {mean_gen_latency:.1f}ms | P95 Gen Latency: {p95_gen_latency:.1f}ms")
+    print(f"  - Mean Total RAG Latency: {mean_total_latency:.1f}ms | P95 Total RAG Latency: {p95_total_latency:.1f}ms")
+    print(f"  - Total Cost: ${total_cost_usd:.6f}")
+    print(f"==================================================")
 
 
 if __name__ == "__main__":

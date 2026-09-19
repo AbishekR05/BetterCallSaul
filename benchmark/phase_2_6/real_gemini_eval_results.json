@@ -1,0 +1,407 @@
+[
+  {
+    "query_id": "p24-consumer-001",
+    "query_text": "Can I return a defective electronic product bought online if seller refuses replacement?",
+    "query_type": "easy",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 15097.053527832031,
+    "generation_latency_ms": 1400.3772735595703,
+    "total_latency_ms": 16497.4308013916,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-consumer-002",
+    "query_text": "How do I file a consumer complaint against a builder for delay in flat possession?",
+    "query_type": "easy",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 4210.513353347778,
+    "generation_latency_ms": 1197.477102279663,
+    "total_latency_ms": 5407.990455627441,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-consumer-003",
+    "query_text": "What is the fee and process to file a case in District Consumer Commission?",
+    "query_type": "easy",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 5095.506191253662,
+    "generation_latency_ms": 1395.883321762085,
+    "total_latency_ms": 6491.389513015747,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-consumer-004",
+    "query_text": "Is an e-commerce platform liable for fake products sold by third-party sellers?",
+    "query_type": "moderately_ambiguous",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 4856.2657833099365,
+    "generation_latency_ms": 1124.8657703399658,
+    "total_latency_ms": 5981.131553649902,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-consumer-005",
+    "query_text": "Can a hospital be sued for medical negligence under Consumer Protection Act?",
+    "query_type": "judgment_focused",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 5175.758600234985,
+    "generation_latency_ms": 1380.8772563934326,
+    "total_latency_ms": 6556.635856628418,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-consumer-006",
+    "query_text": "What is the penalty for misleading advertisements under CPA 2019?",
+    "query_type": "legislation_focused",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 2797.26505279541,
+    "generation_latency_ms": 1542.900562286377,
+    "total_latency_ms": 4340.165615081787,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-consumer-007",
+    "query_text": "Airline lost my baggage on domestic flight, can I claim compensation in consumer court?",
+    "query_type": "moderately_ambiguous",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 2945.9235668182373,
+    "generation_latency_ms": 1385.0815296173096,
+    "total_latency_ms": 4331.005096435547,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-consumer-008",
+    "query_text": "My gym refused refund after closing down within one month. What legal options do I have?",
+    "query_type": "easy",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 2713.245153427124,
+    "generation_latency_ms": 1465.7762050628662,
+    "total_latency_ms": 4179.02135848999,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-consumer-009",
+    "query_text": "Is misleading insurance policy selling covered under unfair trade practices?",
+    "query_type": "mixed_legislation_judgment",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 2922.5707054138184,
+    "generation_latency_ms": 1080.4502964019775,
+    "total_latency_ms": 4003.021001815796,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-consumer-010",
+    "query_text": "What are the rules for dark patterns in online shopping under Consumer Protection guidelines?",
+    "query_type": "legislation_focused",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 2922.7612018585205,
+    "generation_latency_ms": 1067.0793056488037,
+    "total_latency_ms": 3989.840507507324,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-employment-001",
+    "query_text": "What is the legal notice period required if not specified in job offer letter?",
+    "query_type": "easy",
+    "expected_jurisdiction": "jurisdiction_ambiguous",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 2823.6374855041504,
+    "generation_latency_ms": 1194.6995258331299,
+    "total_latency_ms": 4018.3370113372803,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-employment-002",
+    "query_text": "Can an employer hold my original educational certificates legally?",
+    "query_type": "easy",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 2814.2664432525635,
+    "generation_latency_ms": 1204.3936252593994,
+    "total_latency_ms": 4018.660068511963,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-employment-003",
+    "query_text": "What are shop closing hours and overtime payment rules for private IT office in Bangalore?",
+    "query_type": "jurisdiction_sensitive",
+    "expected_jurisdiction": "state_specific: Karnataka",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 2803.457498550415,
+    "generation_latency_ms": 1353.9671897888184,
+    "total_latency_ms": 4157.424688339233,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-employment-004",
+    "query_text": "Am I eligible for gratuity if I resign after completing 4 years and 7 months?",
+    "query_type": "legislation_focused",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 2732.2940826416016,
+    "generation_latency_ms": 1488.4922504425049,
+    "total_latency_ms": 4220.786333084106,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  },
+  {
+    "query_id": "p24-employment-005",
+    "query_text": "Is non-compete clause enforceable in India after employee resigns?",
+    "query_type": "judgment_focused",
+    "expected_jurisdiction": "central_only",
+    "output_jurisdiction": "unclear",
+    "evidence_sufficiency": "insufficient",
+    "summary": "Generation service currently unavailable.",
+    "detail": "LLM generation call failed: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=REDACTED",
+    "citations_count": 0,
+    "citations_list": [],
+    "caveats": [
+      "Generation call failed. Consult system administrator."
+    ],
+    "safety_flags": [
+      "all_evidence_low_confidence",
+      "llm_call_failed"
+    ],
+    "retrieval_latency_ms": 2719.268560409546,
+    "generation_latency_ms": 1236.9530200958252,
+    "total_latency_ms": 3956.221580505371,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "estimated_cost_usd": null,
+    "groundedness_score": 2,
+    "relevance_score": 1
+  }
+]
