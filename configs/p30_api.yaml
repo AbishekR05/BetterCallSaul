@@ -1,0 +1,17 @@
+# configs/p30_api.yaml
+# Phase 3.0 API & Backend Architecture Configuration
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  log_level: "INFO"
+  request_size_limit_bytes: 102400  # 100 KB max payload cap (§10)
+
+cors:
+  allowed_origins:
+    - "*"  # Local dev profile; override in production env
+
+rate_limit:
+  login_max_attempts: 5
+  window_minutes: 15
+  turns_per_minute: 20
