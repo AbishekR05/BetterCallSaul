@@ -7,8 +7,11 @@ venv/
 temp_pgvector/
 extracted/
 vector.zip
-Credentials.json
-token.json
+[Cc]redentials.json
+[Tt]oken.json
+*.sqlite
+*.sqlite3
+*.db
 temp/
 scratch/
 Data/
