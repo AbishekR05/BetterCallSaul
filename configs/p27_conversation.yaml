@@ -1,0 +1,22 @@
+# configs/p27_conversation.yaml
+# Phase 2.7 Conversational Context & Session Memory Configuration
+
+session:
+  session_ttl_minutes: 60
+  max_turns_per_session: 20
+
+context:
+  max_context_turns: 4
+  max_context_tokens_for_rewrite: 512
+
+rewriter:
+  llm_provider: "gemini"               # gemini | mock
+  model: "gemini-3.5-flash"
+  temperature: 0.0
+  rewrite_prompt_version: "p27_v1"
+
+privacy:
+  redact_pii: true
+
+logging:
+  log_file: "benchmark/phase_2_7/conversation_events.jsonl"
