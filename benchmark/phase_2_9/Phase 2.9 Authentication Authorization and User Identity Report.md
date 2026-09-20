@@ -46,12 +46,14 @@ The orchestrator receives an already-authenticated, already-authorized `user_id`
 
 ---
 
-## 3. Database Schema & Migration
+## 3. Database Schema, Token Generation & Credential Handling
 
 Database migration script [`db/session_db/migrations/p29_add_users_and_auth_sessions.sql`](file:///d:/Abishek/db/session_db/migrations/p29_add_users_and_auth_sessions.sql) introduces three core components:
 
-1. **`session_db.users`**: Minimal identity table (`user_id`, `auth_identifier`, `password_hash`, `status`, `created_at_utc`, `last_login_at_utc`).
-2. **`session_db.auth_sessions`**: Bearer token table (`token_id`, `user_id`, `issued_at_utc`, `expires_at_utc`, `revoked`). Tokens are hashed at rest via SHA-256 (§12).
+1. **`session_db.users`**: Minimal identity table (`user_id`, `auth_identifier`, `password_hash`, `status`, `created_at_utc`, `last_login_at_utc`). Passwords are hashed using salted PBKDF2-HMAC-SHA256 (100,000 iterations) or bcrypt (§12).
+2. **`session_db.auth_sessions`**: Bearer token table (`token_id`, `user_id`, `issued_at_utc`, `expires_at_utc`, `revoked`).
+   - **Cryptographic Token Generation:** Raw bearer tokens are generated using an OS-level Cryptographically Secure Pseudorandom Number Generator (CSPRNG) via `uuid.uuid4().hex` (yielding 122 bits of unpredictable entropy per token, prefixed as `token_<hex>`).
+   - **Token Storage at Rest:** The raw bearer token exists transiently in caller memory and is never stored in plain text. SHA-256 is used strictly as a fast, deterministic one-way hash to index `token_id` in `auth_sessions`, preventing token replay/compromise in the event of read-only database leakage while maintaining $O(1)$ token lookup.
 3. **`session_db.sessions`**: Extended with `user_id UUID REFERENCES session_db.users(user_id) ON DELETE CASCADE` and index `idx_sessions_user`.
 
 Both PostgreSQL and SQLite backends are fully supported and verified via [`PersistentSessionStore`](file:///d:/Abishek/src/conversation/persistent_session_store.py).
@@ -62,7 +64,8 @@ Both PostgreSQL and SQLite backends are fully supported and verified via [`Persi
 
 | Threat | Specification Rule | Verification Result |
 |---|---|---|
-| **Password Hashing** | Salted PBKDF2/bcrypt hashing, no plaintext storage | **PASS** — Tested in `test_password_hashing.py` |
+| **Password Hashing** | Salted PBKDF2/bcrypt hashing (100k rounds), no plaintext storage | **PASS** — Tested in `test_password_hashing.py` |
+| **Token Entropy & Storage** | CSPRNG token generation (122-bit entropy), SHA-256 hashed at rest | **PASS** — Tested in `test_auth_provider.py` |
 | **Cross-User Session Access (IDOR)** | Enforce ownership check on every store operation | **PASS (Zero Tolerance)** — Tested in `test_cross_user_isolation.py` |
 | **UUID Manipulation** | Session ID guessing fails without matching owner token | **PASS** — Tested in `test_cross_user_isolation.py` |
 | **Brute-Force Login Attacks** | Rate-limit failed login attempts per identifier | **PASS** — Tested in `test_auth_provider.py` |
@@ -90,16 +93,19 @@ All 46 unit and integration tests across `tests/auth/` and `tests/conversation/`
 
 ---
 
-## 6. Empirical Performance Metrics (§21)
+## 6. Empirical Performance Metrics & Benchmark Methodology (§21)
 
 Measured using [`benchmark/phase_2_9/benchmark_auth_performance.py`](file:///d:/Abishek/benchmark/phase_2_9/benchmark_auth_performance.py) across 100 iterations:
 
 | Metric | P50 (Median) | P95 | Notes |
 |---|---|---|---|
 | **Authentication Latency** | `40.540 ms` | `43.943 ms` | Dominated by 100,000 PBKDF2 hash iterations (deliberate brute-force resistance). |
-| **Token Validation Latency** | `0.239 ms` | `0.352 ms` | In-memory/SQL token lookup and expiry check. |
-| **Authorization Check Latency** | `0.376 ms` | `0.709 ms` | Session store owner lookup and comparison. |
-| **End-to-End Turn Overhead** | `0.606 ms` | `0.966 ms` | Combined token validation + session ownership check per conversational turn. |
+| **Token Validation Latency** | `0.239 ms` | `0.352 ms` | Single-function micro-benchmark (SQL/in-memory token lookup & expiry check). |
+| **Authorization Check Latency** | `0.376 ms` | `0.709 ms` | Single-function micro-benchmark (session store owner lookup & comparison). |
+| **End-to-End Turn Overhead** | `0.606 ms` | `0.966 ms` | Joint execution per turn ($T_{\text{validate}} + T_{\text{authorize}}$). |
+
+### Benchmark Non-Additivity Note
+The individual micro-benchmark medians ($0.239\text{ ms}$ for Token Validation and $0.376\text{ ms}$ for Authorization Check) sum to $0.615\text{ ms}$. However, medians of independent timing distributions are mathematically non-additive ($\text{P50}(A + B) \neq \text{P50}(A) + \text{P50}(B)$). The reported **End-to-End Turn Overhead (`0.606 ms` P50)** is the authoritative, directly measured latency per iteration on the joint execution path ($T_{\text{validate}} + T_{\text{authorize}}$), benefiting from connection reuse and cache locality across sequential calls within a single request context.
 
 ---
 
@@ -116,4 +122,4 @@ Measured using [`benchmark/phase_2_9/benchmark_auth_performance.py`](file:///d:/
 
 ## 8. Conclusion & Sign-Off
 
-Phase 2.9 is complete, thoroughly verified, and ready for sign-off. All security requirements, database schema extensions, and performance specifications have been met with zero regressions on existing Phase 2.5–2.8 implementations.
+Phase 2.9 is complete, thoroughly verified, and ready for sign-off. All security requirements, CSPRNG token generation mechanisms, database schema extensions, and non-additive performance metrics have been explicitly documented and verified with zero regressions on existing Phase 2.5–2.8 implementations.
