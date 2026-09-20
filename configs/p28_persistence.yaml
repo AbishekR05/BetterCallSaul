@@ -1,0 +1,30 @@
+# configs/p28_persistence.yaml
+# Phase 2.8 Persistent User Data & Privacy Layer Configuration
+
+session_store:
+  backend: "postgres"                  # postgres | sqlite | in_memory
+
+session:
+  session_ttl_minutes: 60
+  expired_retention_days: 7
+  background_sweep_interval_minutes: 5
+
+postgres:
+  host: "localhost"
+  port: 5432
+  database: "postgres"                 # separate schema session_db within postgres DB
+  schema: "session_db"
+  user: "postgres"
+  password_env_var: "POSTGRES_PASSWORD"
+  min_conn: 1
+  max_conn: 10
+
+sqlite:
+  db_path: "benchmark/phase_2_8/session_db.sqlite"
+
+privacy:
+  redact_pii: true
+  log_full_turn_content: false
+
+logging:
+  log_file: "benchmark/phase_2_8/persistence_events.jsonl"
