@@ -1,9 +1,9 @@
 {
   "phase": "2.2",
   "created_at": "2026-09-05T17:37:08Z",
-  "last_updated": "2026-09-06T16:41:25Z",
-  "total_batches": 45,
-  "completed_batches": 44,
+  "last_updated": "2026-09-20T12:54:18Z",
+  "total_batches": 75,
+  "completed_batches": 74,
   "failed_batches": 0,
   "batches": {
     "pilot_sampled_chunks": {
@@ -280,9 +280,198 @@
       "peak_vram_gb": 3.6977338790893555
     },
     "filtered_in_kerala_judgments_part_0011.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T17:10:46Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_kerala_judgments_part_0010.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-06T17:53:29Z",
+      "num_chunks": 250001,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_kerala_judgments_part_0009.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-07T15:33:49Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_kerala_judgments_part_0008.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-07T16:03:53Z",
+      "num_chunks": 250002,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_kerala_judgments_part_0007.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-07T17:27:33Z",
+      "num_chunks": 250001,
+      "peak_vram_gb": 3.6977338790893555
+    },
+    "filtered_in_kerala_judgments_part_0006.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-08T16:10:22Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_kerala_judgments_part_0005.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-08T16:43:37Z",
+      "error_message": "CUDA error: unknown error\nSearch for `cudaErrorUnknown' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\n",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_kerala_judgments_part_0004.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-08T17:20:57Z",
+      "num_chunks": 250002,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_kerala_judgments_part_0003.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-09T01:47:35Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250002,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_kerala_judgments_part_0002.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-09T02:21:42Z",
+      "num_chunks": 250001,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_kerala_judgments_part_0001.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-09T02:58:28Z",
+      "num_chunks": 250002,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madhya-pradesh_judgments_part_0006.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-09T03:36:05Z",
+      "num_chunks": 209693,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madhya-pradesh_judgments_part_0005.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-09T14:20:02Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madhya-pradesh_judgments_part_0004.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-09T14:53:29Z",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madhya-pradesh_judgments_part_0003.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-09T15:32:00Z",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madhya-pradesh_judgments_part_0002.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-09T18:43:22Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madhya-pradesh_judgments_part_0001.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-09T19:17:27Z",
+      "num_chunks": 250001,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0019.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-09T19:37:14Z",
+      "num_chunks": 143231,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0018.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-09T20:20:35Z",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0017.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-10T17:50:51Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0016.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-10T18:28:51Z",
+      "num_chunks": 250004,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0015.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-10T19:08:14Z",
+      "num_chunks": 250002,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0014.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-19T17:39:57Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250003,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0013.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-19T18:15:14Z",
+      "num_chunks": 250001,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0012.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-19T18:52:45Z",
+      "num_chunks": 250001,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0011.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-19T19:31:01Z",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0010.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-20T11:07:06Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250001,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0009.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-20T11:39:19Z",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0008.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-20T12:17:37Z",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0007.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-20T12:54:18Z",
+      "num_chunks": 250001,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0006.parquet": {
       "status": "embedding",
-      "last_updated": "2026-09-06T16:41:25Z",
-      "error_message": "Interrupted run auto-reset"
+      "last_updated": "2026-09-20T12:54:18Z"
     }
   }
 }

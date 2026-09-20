@@ -18,7 +18,7 @@ class SessionStore(ABC):
     """
 
     @abstractmethod
-    def create_session(self, ttl_minutes: int = 60) -> ConversationSession:
+    def create_session(self, user_id: Optional[str] = None, ttl_minutes: int = 60) -> ConversationSession:
         """Create and return a new ConversationSession."""
         pass
 
@@ -63,7 +63,7 @@ class InMemorySessionStore(SessionStore):
     def __init__(self):
         self._store: Dict[str, ConversationSession] = {}
 
-    def create_session(self, ttl_minutes: int = 60) -> ConversationSession:
+    def create_session(self, user_id: Optional[str] = None, ttl_minutes: int = 60) -> ConversationSession:
         now = datetime.utcnow()
         session_id = str(uuid.uuid4())
         created_at_utc = now.isoformat()
@@ -72,6 +72,7 @@ class InMemorySessionStore(SessionStore):
 
         session = ConversationSession(
             session_id=session_id,
+            user_id=str(user_id) if user_id else None,
             created_at_utc=created_at_utc,
             last_active_utc=last_active_utc,
             expires_at_utc=expires_at_utc,

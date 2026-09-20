@@ -51,6 +51,7 @@ class ConversationSession(BaseModel):
     Session container representing state and conversation history.
     """
     session_id: str
+    user_id: Optional[str] = None
     created_at_utc: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     last_active_utc: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     expires_at_utc: str

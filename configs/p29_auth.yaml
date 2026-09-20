@@ -1,0 +1,11 @@
+# configs/p29_auth.yaml
+# Configuration for Phase 2.9 Authentication & Authorization Boundary
+
+auth:
+  enabled: true
+  provider: "password"              # Default authentication provider implementation
+  token_ttl_minutes: 60             # Expiry TTL for authentication bearer tokens
+  password_min_length: 8            # Minimum length requirement for raw user passwords
+  max_login_attempts: 5             # Maximum failed login attempts allowed in rate limit window
+  rate_limit_window_minutes: 15     # Rolling rate limit window in minutes
+  password_hash_algorithm: "auto"   # Selects bcrypt if available, else pbkdf2_sha256

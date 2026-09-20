@@ -71,8 +71,28 @@ class PersistentSessionStore(SessionStore):
         conn.execute("PRAGMA foreign_keys = ON;")
         with conn:
             conn.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    user_id TEXT PRIMARY KEY,
+                    auth_identifier TEXT UNIQUE NOT NULL,
+                    password_hash TEXT,
+                    status TEXT NOT NULL CHECK (status IN ('active', 'disabled', 'deleted')),
+                    created_at_utc TEXT NOT NULL,
+                    last_login_at_utc TEXT
+                );
+            """)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS auth_sessions (
+                    token_id TEXT PRIMARY KEY,
+                    user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+                    issued_at_utc TEXT NOT NULL,
+                    expires_at_utc TEXT NOT NULL,
+                    revoked INTEGER NOT NULL DEFAULT 0
+                );
+            """)
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS sessions (
                     session_id TEXT PRIMARY KEY,
+                    user_id TEXT REFERENCES users(user_id) ON DELETE CASCADE,
                     created_at_utc TEXT NOT NULL,
                     last_active_utc TEXT NOT NULL,
                     expires_at_utc TEXT NOT NULL,
@@ -80,6 +100,13 @@ class PersistentSessionStore(SessionStore):
                     turn_count INTEGER NOT NULL DEFAULT 0
                 );
             """)
+            # Check if user_id column needs to be added to pre-existing sessions table
+            cur = conn.cursor()
+            cur.execute("PRAGMA table_info(sessions);")
+            cols = [row[1] for row in cur.fetchall()]
+            if "user_id" not in cols:
+                conn.execute("ALTER TABLE sessions ADD COLUMN user_id TEXT REFERENCES users(user_id) ON DELETE CASCADE;")
+
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS conversation_turns (
                     turn_id TEXT PRIMARY KEY,
@@ -97,6 +124,7 @@ class PersistentSessionStore(SessionStore):
             """)
             conn.execute("CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at_utc);")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_sessions_status ON sessions(status);")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_turns_session_index ON conversation_turns(session_id, turn_index);")
         conn.close()
 
@@ -107,8 +135,28 @@ class PersistentSessionStore(SessionStore):
         with conn.cursor() as cur:
             cur.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name};")
             cur.execute(f"""
+                CREATE TABLE IF NOT EXISTS {schema_name}.users (
+                    user_id UUID PRIMARY KEY,
+                    auth_identifier TEXT UNIQUE NOT NULL,
+                    password_hash TEXT,
+                    status VARCHAR(20) NOT NULL CHECK (status IN ('active', 'disabled', 'deleted')),
+                    created_at_utc TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    last_login_at_utc TIMESTAMPTZ
+                );
+            """)
+            cur.execute(f"""
+                CREATE TABLE IF NOT EXISTS {schema_name}.auth_sessions (
+                    token_id TEXT PRIMARY KEY,
+                    user_id UUID NOT NULL REFERENCES {schema_name}.users(user_id) ON DELETE CASCADE,
+                    issued_at_utc TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    expires_at_utc TIMESTAMPTZ NOT NULL,
+                    revoked BOOLEAN NOT NULL DEFAULT FALSE
+                );
+            """)
+            cur.execute(f"""
                 CREATE TABLE IF NOT EXISTS {schema_name}.sessions (
                     session_id UUID PRIMARY KEY,
+                    user_id UUID REFERENCES {schema_name}.users(user_id) ON DELETE CASCADE,
                     created_at_utc TIMESTAMPTZ NOT NULL,
                     last_active_utc TIMESTAMPTZ NOT NULL,
                     expires_at_utc TIMESTAMPTZ NOT NULL,
@@ -116,6 +164,7 @@ class PersistentSessionStore(SessionStore):
                     turn_count INT NOT NULL DEFAULT 0
                 );
             """)
+            cur.execute(f"ALTER TABLE {schema_name}.sessions ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES {schema_name}.users(user_id) ON DELETE CASCADE;")
             cur.execute(f"""
                 CREATE TABLE IF NOT EXISTS {schema_name}.conversation_turns (
                     turn_id UUID PRIMARY KEY,
@@ -133,19 +182,22 @@ class PersistentSessionStore(SessionStore):
             """)
             cur.execute(f"CREATE INDEX IF NOT EXISTS idx_{schema_name}_expires ON {schema_name}.sessions(expires_at_utc);")
             cur.execute(f"CREATE INDEX IF NOT EXISTS idx_{schema_name}_status ON {schema_name}.sessions(status);")
+            cur.execute(f"CREATE INDEX IF NOT EXISTS idx_{schema_name}_user ON {schema_name}.sessions(user_id);")
             cur.execute(f"CREATE INDEX IF NOT EXISTS idx_{schema_name}_turns ON {schema_name}.conversation_turns(session_id, turn_index);")
         conn.commit()
         conn.close()
 
-    def create_session(self, ttl_minutes: int = 60) -> ConversationSession:
+    def create_session(self, user_id: Optional[str] = None, ttl_minutes: int = 60) -> ConversationSession:
         now = datetime.utcnow()
         session_id = str(uuid.uuid4())
         created_at_utc = now.isoformat()
         last_active_utc = created_at_utc
         expires_at_utc = (now + timedelta(minutes=ttl_minutes)).isoformat()
+        u_id_str = str(user_id) if user_id else None
 
         session = ConversationSession(
             session_id=session_id,
+            user_id=u_id_str,
             created_at_utc=created_at_utc,
             last_active_utc=last_active_utc,
             expires_at_utc=expires_at_utc,
@@ -161,14 +213,14 @@ class PersistentSessionStore(SessionStore):
             if self.backend == "sqlite":
                 with conn:
                     conn.execute(
-                        "INSERT INTO sessions (session_id, created_at_utc, last_active_utc, expires_at_utc, status, turn_count) VALUES (?, ?, ?, ?, ?, ?)",
-                        (session_id, created_at_utc, last_active_utc, expires_at_utc, "active", 0)
+                        "INSERT INTO sessions (session_id, user_id, created_at_utc, last_active_utc, expires_at_utc, status, turn_count) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        (session_id, u_id_str, created_at_utc, last_active_utc, expires_at_utc, "active", 0)
                     )
             else:
                 with conn.cursor() as cur:
                     cur.execute(
-                        f"INSERT INTO {schema_prefix}sessions (session_id, created_at_utc, last_active_utc, expires_at_utc, status, turn_count) VALUES (%s, %s, %s, %s, %s, %s)",
-                        (session_id, created_at_utc, last_active_utc, expires_at_utc, "active", 0)
+                        f"INSERT INTO {schema_prefix}sessions (session_id, user_id, created_at_utc, last_active_utc, expires_at_utc, status, turn_count) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                        (session_id, u_id_str, created_at_utc, last_active_utc, expires_at_utc, "active", 0)
                     )
                 conn.commit()
         finally:
@@ -186,14 +238,14 @@ class PersistentSessionStore(SessionStore):
         try:
             if self.backend == "sqlite":
                 cur = conn.cursor()
-                cur.execute("SELECT session_id, created_at_utc, last_active_utc, expires_at_utc, status, turn_count FROM sessions WHERE session_id = ?", (session_id,))
+                cur.execute("SELECT session_id, user_id, created_at_utc, last_active_utc, expires_at_utc, status, turn_count FROM sessions WHERE session_id = ?", (session_id,))
                 row = cur.fetchone()
-                if not row or row[4] != "active":
+                if not row or row[5] != "active":
                     return None
 
                 # Check TTL expiration
                 now = datetime.utcnow()
-                expires_dt = datetime.fromisoformat(row[3])
+                expires_dt = datetime.fromisoformat(row[4])
                 if now >= expires_dt:
                     with conn:
                         conn.execute("UPDATE sessions SET status = 'expired' WHERE session_id = ?", (session_id,))
@@ -204,13 +256,13 @@ class PersistentSessionStore(SessionStore):
                 turn_rows = cur.fetchall()
             else:
                 with conn.cursor() as cur:
-                    cur.execute(f"SELECT session_id, created_at_utc, last_active_utc, expires_at_utc, status, turn_count FROM {schema_prefix}sessions WHERE session_id = %s", (session_id,))
+                    cur.execute(f"SELECT session_id, user_id, created_at_utc, last_active_utc, expires_at_utc, status, turn_count FROM {schema_prefix}sessions WHERE session_id = %s", (session_id,))
                     row = cur.fetchone()
-                    if not row or row[4] != "active":
+                    if not row or row[5] != "active":
                         return None
 
                     now = datetime.utcnow()
-                    expires_dt = datetime.fromisoformat(str(row[3]))
+                    expires_dt = datetime.fromisoformat(str(row[4]))
                     if now >= expires_dt:
                         cur.execute(f"UPDATE {schema_prefix}sessions SET status = 'expired' WHERE session_id = %s", (session_id,))
                         conn.commit()
@@ -237,12 +289,13 @@ class PersistentSessionStore(SessionStore):
 
             return ConversationSession(
                 session_id=str(row[0]),
-                created_at_utc=str(row[1]),
-                last_active_utc=str(row[2]),
-                expires_at_utc=str(row[3]),
+                user_id=str(row[1]) if row[1] else None,
+                created_at_utc=str(row[2]),
+                last_active_utc=str(row[3]),
+                expires_at_utc=str(row[4]),
                 turns=turns,
                 turn_count=len(turns),
-                status=row[4]
+                status=row[5]
             )
         finally:
             conn.close()

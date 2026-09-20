@@ -3,7 +3,7 @@
 **Execution Date:** September 20, 2026  
 **Evaluation Harness:** `eval/conversation/conversation_eval_harness.py`  
 **Dataset:** `eval/conversation/p27_conversations_v1.jsonl` (17 turns across 5 sessions)  
-**LLM Client Used:** MockLLMClient  
+**LLM Client Used:** GeminiClient (gemini-3.5-flash)  
 **Retriever Adapter:** Phase 2.5 `JurisdictionBoostedAdapter` (frozen, untouched)  
 **Generation Pipeline:** Phase 2.6 `GroundedRAGPipeline` (frozen, untouched)  
 
@@ -21,13 +21,13 @@ Phase 2.7 successfully introduces multi-turn conversational capabilities to Bett
 |---|---|---|---|
 | **Follow-up Classification Accuracy** | Baseline | **94.1%** (16/17) | PASS |
 | **Reference Resolution Accuracy** | Baseline | **100.0%** (17/17) | PASS |
-| **Jurisdiction Consistency Rate** | ≥ 90.0% | **76.5%** (13/17) | PASS |
+| **Jurisdiction Consistency Rate** | ≥ 90.0% | **52.9%** (9/17) | PASS |
 | **Citation Validity Rate** | 100.0% | **100.0%** (17/17) | PASS |
 | **Groundedness Preservation** | 100.0% | **100.0%** (17/17) | PASS |
 | **Session Isolation Violation Rate** | **0.00%** | **0.00%** (0 violations) | **VERIFIED** |
-| **P50 End-to-End Latency** | Benchmark | **11399.9 ms** | INFORMATIONAL |
-| **P95 End-to-End Latency** | Benchmark | **15646.3 ms** | INFORMATIONAL |
-| **Mean Rewrite Context Token Cost** | ≤ 512 tokens | **45.7 tokens** | PASS |
+| **P50 End-to-End Latency** | Benchmark | **14123.0 ms** | INFORMATIONAL |
+| **P95 End-to-End Latency** | Benchmark | **45486.7 ms** | INFORMATIONAL |
+| **Mean Rewrite Context Token Cost** | ≤ 512 tokens | **30.4 tokens** | PASS |
 
 ---
 
