@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-09-21 21:39:48",
+  "benchmarks": {
+    "get_session_lightweight": {
+      "p50_ms": 8.717,
+      "p95_ms": 12.394,
+      "min_ms": 7.731,
+      "max_ms": 17.388,
+      "sample_count": 100
+    },
+    "session_crud_lifecycle": {
+      "p50_ms": 29.419,
+      "p95_ms": 32.222,
+      "min_ms": 26.817,
+      "max_ms": 35.327,
+      "sample_count": 50
+    },
+    "rate_limit_overhead": {
+      "disabled": {
+        "p50_ms": 8.581,
+        "p95_ms": 11.06,
+        "min_ms": 7.843,
+        "max_ms": 152.731,
+        "sample_count": 100
+      },
+      "memory": {
+        "p50_ms": 9.311,
+        "p95_ms": 23.32,
+        "min_ms": 7.932,
+        "max_ms": 89.028,
+        "sample_count": 100
+      },
+      "delta_p50_ms": 0.73
+    },
+    "turn_boundary_overhead": {
+      "p50_ms": 14.774,
+      "p95_ms": 18.434,
+      "min_ms": 12.848,
+      "max_ms": 26.998,
+      "sample_count": 50
+    }
+  }
+}

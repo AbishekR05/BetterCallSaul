@@ -1,0 +1,61 @@
+# configs/p31_hardening.yaml
+# Phase 3.1 Hardening & Production Readiness Configuration
+
+app_env: "production" # "development" | "production"
+debug: false
+docs_enabled: false   # Controls /docs, /redoc, /openapi.json in production
+
+# Timeout boundaries (seconds)
+timeouts:
+  request_timeout_s: 30.0
+  turn_timeout_s: 60.0       # Must respect upstream RAG retrieval P95 (~13s) with safety headroom
+  queue_wait_timeout_s: 10.0 # Waiting time for turn concurrency capacity
+
+# Payload and request field validation limits
+limits:
+  max_request_size_bytes: 102400 # 100 KB
+  auth_identifier_max_length: 254
+  password_min_length: 8
+  password_max_length: 128
+  turn_query_max_length: 2000
+  session_title_max_length: 200
+
+# Rate Limiting configuration
+rate_limit:
+  enabled: true
+  backend: "memory" # "memory" | "disabled"
+  rules:
+    register_ip:
+      requests: 5
+      window_s: 3600 # 5 / hour
+    login_ip:
+      requests: 10
+      window_s: 60   # 10 / minute
+    login_identifier:
+      requests: 5
+      window_s: 900  # 5 failed / 15 minutes
+    session_create_user:
+      requests: 20
+      window_s: 60   # 20 / minute
+    turn_create_user:
+      requests: 10
+      window_s: 60   # 10 / minute
+    session_read_delete_user:
+      requests: 120
+      window_s: 60   # 120 / minute
+
+# Concurrency safety limits
+concurrency:
+  max_concurrent_turns: 2   # Protects shared 8GB GPU / Gemini API quota
+  session_serialization: true
+
+# Logging and security headers
+security:
+  cors_allowed_origins:
+    - "https://app.bettercallsaul.local" # Production origins must be explicit
+  trusted_proxies: [] # Empty list = use socket peer IP
+  response_timing_header: true
+  access_log_exclude_paths:
+    - "/health"
+    - "/ready"
+  log_redaction_enabled: true

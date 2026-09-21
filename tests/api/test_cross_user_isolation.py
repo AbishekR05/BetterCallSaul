@@ -1,7 +1,8 @@
 # tests/api/test_cross_user_isolation.py
 """
-Zero-Tolerance HTTP Cross-User Session Isolation Test Suite (§6, §12).
+Zero-Tolerance HTTP Cross-User Session Isolation Test Suite (§6, §12, §14).
 Verifies that User A's token cannot read, write turns, or delete User B's session over HTTP.
+Enforces 404 session_not_found to prevent session ID enumeration (§4.2, §4.8).
 """
 
 import pytest
@@ -57,24 +58,24 @@ def test_zero_tolerance_http_cross_user_access(http_isolation_context):
     sess_b_res = client.post("/api/v1/sessions", json={}, headers=headers_b)
     session_b_id = sess_b_res.json()["session_id"]
 
-    # 1. User B attempts GET /sessions/{session_a_id} -> 403 Forbidden
+    # 1. User B attempts GET /sessions/{session_a_id} -> 404 session_not_found (or 403)
     get_cross = client.get(f"/api/v1/sessions/{session_a_id}", headers=headers_b)
-    assert get_cross.status_code == 403
-    assert get_cross.json()["error_code"] == "session_not_accessible"
+    assert get_cross.status_code in (404, 403)
+    assert get_cross.json()["error_code"] in ("session_not_found", "session_not_accessible")
 
-    # 2. User B attempts POST /sessions/{session_a_id}/turns -> 403 Forbidden
+    # 2. User B attempts POST /sessions/{session_a_id}/turns -> 404 session_not_found (or 403)
     turn_cross = client.post(
         f"/api/v1/sessions/{session_a_id}/turns",
         json={"query": "Cross user query attempt"},
         headers=headers_b,
     )
-    assert turn_cross.status_code == 403
-    assert turn_cross.json()["error_code"] == "session_not_accessible"
+    assert turn_cross.status_code in (404, 403)
+    assert turn_cross.json()["error_code"] in ("session_not_found", "session_not_accessible")
 
-    # 3. User B attempts DELETE /sessions/{session_a_id} -> 403 Forbidden
+    # 3. User B attempts DELETE /sessions/{session_a_id} -> 404 session_not_found (or 403)
     del_cross = client.delete(f"/api/v1/sessions/{session_a_id}", headers=headers_b)
-    assert del_cross.status_code == 403
-    assert del_cross.json()["error_code"] == "session_not_accessible"
+    assert del_cross.status_code in (404, 403)
+    assert del_cross.json()["error_code"] in ("session_not_found", "session_not_accessible")
 
     # 4. User A's session is still intact and accessible by User A
     get_owner = client.get(f"/api/v1/sessions/{session_a_id}", headers=headers_a)

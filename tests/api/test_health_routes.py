@@ -1,6 +1,6 @@
 # tests/api/test_health_routes.py
 """
-Unit tests for /health and /ready routes (§5, §12).
+Unit tests for /health and /ready routes (§5, §11, §12).
 """
 
 import pytest
@@ -41,4 +41,7 @@ def test_health_liveness_endpoint(client):
 def test_ready_readiness_endpoint(client):
     response = client.get("/ready")
     assert response.status_code == 200
-    assert response.json() == {"status": "ready"}
+    res_data = response.json()
+    assert res_data["status"] == "ready"
+    assert "checks" in res_data
+    assert res_data["checks"]["session_db"] == "ok"

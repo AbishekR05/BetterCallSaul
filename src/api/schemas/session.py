@@ -1,25 +1,26 @@
 # src/api/schemas/session.py
 """
-Pydantic Schemas for Conversation Session Operations (§7).
+Pydantic Schemas for Conversation Session Operations (§6, §7).
+Enforces ConfigDict(extra="forbid", str_strip_whitespace=True).
 """
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 from uuid import UUID
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class CreateSessionRequest(BaseModel):
     """
-    Request payload to create a new session (§7).
-    No fields allowed; user_id is assigned exclusively from the authenticated token.
+    Request payload to create a new session (§6, §7).
+    No extra fields or user_id allowed; user_id is assigned from token.
     """
-    pass
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
 
 class SessionResponse(BaseModel):
     """
-    Response model for session details (§7).
+    Response model for session details.
     """
     session_id: UUID = Field(..., description="Unique conversation session identifier")
     created_at_utc: datetime = Field(..., description="Session creation timestamp")
@@ -31,6 +32,6 @@ class SessionResponse(BaseModel):
 
 class SessionListResponse(BaseModel):
     """
-    Response container listing caller's owned sessions (§7).
+    Response container listing caller's owned sessions.
     """
     sessions: List[SessionResponse] = Field(default_factory=list, description="List of owned sessions")

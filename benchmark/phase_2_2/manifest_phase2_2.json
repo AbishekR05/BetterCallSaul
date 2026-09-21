@@ -1,9 +1,9 @@
 {
   "phase": "2.2",
   "created_at": "2026-09-05T17:37:08Z",
-  "last_updated": "2026-09-20T12:54:18Z",
-  "total_batches": 75,
-  "completed_batches": 74,
+  "last_updated": "2026-09-21T16:09:59Z",
+  "total_batches": 79,
+  "completed_batches": 78,
   "failed_batches": 0,
   "batches": {
     "pilot_sampled_chunks": {
@@ -470,8 +470,34 @@
       "peak_vram_gb": 3.6749067306518555
     },
     "filtered_in_madras_judgments_part_0006.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-20T16:20:12Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250002,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0005.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-20T16:51:56Z",
+      "num_chunks": 250000,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0004.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-20T17:29:29Z",
+      "num_chunks": 250001,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0003.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-20T18:10:38Z",
+      "num_chunks": 250002,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0002.parquet": {
       "status": "embedding",
-      "last_updated": "2026-09-20T12:54:18Z"
+      "last_updated": "2026-09-21T16:09:59Z",
+      "error_message": "Interrupted run auto-reset"
     }
   }
 }

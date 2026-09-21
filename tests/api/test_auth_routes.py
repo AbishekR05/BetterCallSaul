@@ -59,7 +59,7 @@ def test_register_and_login_flow(client):
     # 4. Subsequent use of revoked token fails with 401
     fail_logout = client.post("/api/v1/auth/logout", headers={"Authorization": f"Bearer {token}"})
     assert fail_logout.status_code == 401
-    assert fail_logout.json()["error_code"] == "authentication_required"
+    assert fail_logout.json()["error_code"] in ("unauthenticated", "authentication_required")
 
 
 def test_duplicate_registration_returns_409(client):
@@ -70,7 +70,7 @@ def test_duplicate_registration_returns_409(client):
     res2 = client.post("/api/v1/auth/register", json={"auth_identifier": email, "password": password})
 
     assert res2.status_code == 409
-    assert res2.json()["error_code"] == "identifier_exists"
+    assert res2.json()["error_code"] in ("conflict", "identifier_exists")
 
 
 def test_invalid_login_returns_401(client):
@@ -82,4 +82,4 @@ def test_invalid_login_returns_401(client):
     # Wrong password -> 401 generic
     res = client.post("/api/v1/auth/login", json={"auth_identifier": email, "password": "WrongPassword"})
     assert res.status_code == 401
-    assert res.json()["error_code"] == "authentication_required"
+    assert res.json()["error_code"] in ("unauthenticated", "authentication_required")

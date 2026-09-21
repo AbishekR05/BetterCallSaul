@@ -1,0 +1,856 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "BetterCallSaul RAG API",
+    "description": "Phase 3.0 Production API & Backend Architecture for Grounded Legal RAG",
+    "version": "3.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health Check",
+        "description": "Liveness probe - confirms API process is running (\u00a75).",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Readiness Check",
+        "description": "Readiness probe - verifies session store connectivity (\u00a75, \u00a710).",
+        "operationId": "readiness_check_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Register",
+        "description": "Creates a new user account (\u00a75).",
+        "operationId": "register_api_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Login",
+        "description": "Authenticates credentials and issues a bearer token (\u00a75).",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Logout",
+        "description": "Revokes an active bearer token (\u00a75).",
+        "operationId": "logout_api_v1_auth_logout_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "List Sessions",
+        "description": "Returns all active sessions owned exclusively by the caller (\u00a75).",
+        "operationId": "list_sessions_api_v1_sessions_get",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Create Session",
+        "description": "Creates a new persistent session stamped with caller's user_id (\u00a75).",
+        "operationId": "create_session_api_v1_sessions_post",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSessionRequest",
+                "default": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{session_id}": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get Session",
+        "description": "Retrieves session details after ownership verification (\u00a75, \u00a76).",
+        "operationId": "get_session_api_v1_sessions__session_id__get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Delete Session",
+        "description": "Purges a session after ownership verification (\u00a75, \u00a76).",
+        "operationId": "delete_session_api_v1_sessions__session_id__delete",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{session_id}/turns": {
+      "post": {
+        "tags": [
+          "Turns"
+        ],
+        "summary": "Post Turn",
+        "description": "Submits a conversational query turn for a specific session (\u00a75, \u00a78).\nVerified for bearer authentication and session ownership prior to execution.",
+        "operationId": "post_turn_api_v1_sessions__session_id__turns_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TurnRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroundedAnswerResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthTokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token",
+            "description": "Opaque bearer authentication token"
+          },
+          "expires_at_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At Utc",
+            "description": "Token expiry timestamp"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "description": "Authentication scheme type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "expires_at_utc"
+        ],
+        "title": "AuthTokenResponse",
+        "description": "Response returned upon successful login (\u00a77)."
+      },
+      "AuthUserResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id",
+            "description": "Server-assigned unique user identifier"
+          },
+          "auth_identifier": {
+            "type": "string",
+            "title": "Auth Identifier",
+            "description": "Normalized user authentication identifier"
+          },
+          "created_at_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At Utc",
+            "description": "Account creation timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "auth_identifier",
+          "created_at_utc"
+        ],
+        "title": "AuthUserResponse",
+        "description": "Response returned upon successful account creation (\u00a77)."
+      },
+      "CitationResponse": {
+        "properties": {
+          "document_title": {
+            "type": "string",
+            "title": "Document Title",
+            "description": "Title of cited statute or case law document"
+          },
+          "document_type": {
+            "type": "string",
+            "title": "Document Type",
+            "description": "Legal document category"
+          },
+          "jurisdiction": {
+            "type": "string",
+            "title": "Jurisdiction",
+            "description": "Legal jurisdiction governing document"
+          },
+          "section": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Section",
+            "description": "Specific section or article reference"
+          },
+          "source_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Reference",
+            "description": "Source reference citation text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document_title",
+          "document_type",
+          "jurisdiction"
+        ],
+        "title": "CitationResponse",
+        "description": "Public citation reference model (\u00a77)."
+      },
+      "CreateSessionRequest": {
+        "properties": {},
+        "type": "object",
+        "title": "CreateSessionRequest",
+        "description": "Request payload to create a new session (\u00a77).\nNo fields allowed; user_id is assigned exclusively from the authenticated token."
+      },
+      "GroundedAnswerResponse": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Session Id",
+            "description": "Conversation session identifier"
+          },
+          "turn_index": {
+            "type": "integer",
+            "title": "Turn Index",
+            "description": "Ordinal index of turn within session"
+          },
+          "answer_summary": {
+            "type": "string",
+            "title": "Answer Summary",
+            "description": "High-level legal answer summary"
+          },
+          "answer_detail": {
+            "type": "string",
+            "title": "Answer Detail",
+            "description": "Detailed grounded legal analysis"
+          },
+          "applicable_jurisdiction": {
+            "type": "string",
+            "title": "Applicable Jurisdiction",
+            "description": "Jurisdiction determined for answer"
+          },
+          "evidence_sufficiency": {
+            "type": "string",
+            "title": "Evidence Sufficiency",
+            "description": "Sufficiency verdict of legal context"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/CitationResponse"
+            },
+            "type": "array",
+            "title": "Citations",
+            "description": "Legal citations used"
+          },
+          "caveats": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Caveats",
+            "description": "Legal disclaimers or caveats"
+          },
+          "clarifying_question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clarifying Question",
+            "description": "Optional clarifying question if ambiguous"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "turn_index",
+          "answer_summary",
+          "answer_detail",
+          "applicable_jurisdiction",
+          "evidence_sufficiency"
+        ],
+        "title": "GroundedAnswerResponse",
+        "description": "Public response model for a grounded conversational turn (\u00a77).\nIntentionally omits internal generation metadata (cost/tokens/model) and safety flags."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LoginRequest": {
+        "properties": {
+          "auth_identifier": {
+            "type": "string",
+            "title": "Auth Identifier",
+            "description": "User login identifier"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "description": "Raw user password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "auth_identifier",
+          "password"
+        ],
+        "title": "LoginRequest",
+        "description": "User login payload (\u00a77)."
+      },
+      "RegisterRequest": {
+        "properties": {
+          "auth_identifier": {
+            "type": "string",
+            "title": "Auth Identifier",
+            "description": "User login identifier (e.g. email or username)"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "title": "Password",
+            "description": "Raw user password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "auth_identifier",
+          "password"
+        ],
+        "title": "RegisterRequest",
+        "description": "User registration payload (\u00a77).\nNo user_id input permitted."
+      },
+      "SessionListResponse": {
+        "properties": {
+          "sessions": {
+            "items": {
+              "$ref": "#/components/schemas/SessionResponse"
+            },
+            "type": "array",
+            "title": "Sessions",
+            "description": "List of owned sessions"
+          }
+        },
+        "type": "object",
+        "title": "SessionListResponse",
+        "description": "Response container listing caller's owned sessions (\u00a77)."
+      },
+      "SessionResponse": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Session Id",
+            "description": "Unique conversation session identifier"
+          },
+          "created_at_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At Utc",
+            "description": "Session creation timestamp"
+          },
+          "last_active_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Active Utc",
+            "description": "Last active timestamp"
+          },
+          "expires_at_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At Utc",
+            "description": "Session expiration timestamp"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Session status ('active', 'expired', 'closed')"
+          },
+          "turn_count": {
+            "type": "integer",
+            "title": "Turn Count",
+            "description": "Total conversation turns in session",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "created_at_utc",
+          "last_active_utc",
+          "expires_at_utc",
+          "status"
+        ],
+        "title": "SessionResponse",
+        "description": "Response model for session details (\u00a77)."
+      },
+      "TurnRequest": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "maxLength": 4096,
+            "minLength": 1,
+            "title": "Query",
+            "description": "User legal query text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "TurnRequest",
+        "description": "Payload for submitting a conversational turn (\u00a77).\nMust not include user_id or session_id in body; user_id is derived from auth, session_id from path."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

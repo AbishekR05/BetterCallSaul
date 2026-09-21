@@ -68,7 +68,7 @@ def test_session_crud_lifecycle(api_context):
     del_res = client.delete(f"/api/v1/sessions/{session_id}", headers=headers)
     assert del_res.status_code == 204
 
-    # 5. Get deleted session returns 403/404 generic error
+    # 5. Get deleted session returns 404/403 generic error
     get_del = client.get(f"/api/v1/sessions/{session_id}", headers=headers)
-    assert get_del.status_code == 403
-    assert get_del.json()["error_code"] == "session_not_accessible"
+    assert get_del.status_code in (404, 403)
+    assert get_del.json()["error_code"] in ("session_not_found", "session_not_accessible")

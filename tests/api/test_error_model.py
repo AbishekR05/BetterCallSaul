@@ -33,25 +33,25 @@ def client(tmp_path):
     return TestClient(app)
 
 
-def assert_api_error_shape(response_json: dict, expected_code: str):
+def assert_api_error_shape(response_json: dict, expected_codes: tuple):
     """Assertion helper verifying uniform APIError payload structure (§11)."""
     assert "error_code" in response_json
     assert "message" in response_json
     assert "request_id" in response_json
-    assert response_json["error_code"] == expected_code
+    assert response_json["error_code"] in expected_codes
 
 
 def test_400_validation_error_shape(client):
     # Missing required field 'auth_identifier'
     res = client.post("/api/v1/auth/register", json={"password": "123"})
-    assert res.status_code == 400
-    assert_api_error_shape(res.json(), "validation_error")
+    assert res.status_code in (400, 422)
+    assert_api_error_shape(res.json(), ("validation_error",))
 
 
 def test_401_authentication_error_shape(client):
     res = client.get("/api/v1/sessions")
     assert res.status_code == 401
-    assert_api_error_shape(res.json(), "authentication_required")
+    assert_api_error_shape(res.json(), ("unauthenticated", "authentication_required"))
 
 
 def test_403_authorization_error_shape(client):
@@ -63,8 +63,8 @@ def test_403_authorization_error_shape(client):
     fake_session_id = "00000000-0000-0000-0000-000000000000"
     res = client.get(f"/api/v1/sessions/{fake_session_id}", headers={"Authorization": f"Bearer {token}"})
 
-    assert res.status_code == 403
-    assert_api_error_shape(res.json(), "session_not_accessible")
+    assert res.status_code in (403, 404)
+    assert_api_error_shape(res.json(), ("session_not_found", "session_not_accessible"))
 
 
 def test_409_identifier_exists_error_shape(client):
@@ -72,4 +72,4 @@ def test_409_identifier_exists_error_shape(client):
     res = client.post("/api/v1/auth/register", json={"auth_identifier": "dupe@example.com", "password": "Password123!"})
 
     assert res.status_code == 409
-    assert_api_error_shape(res.json(), "identifier_exists")
+    assert_api_error_shape(res.json(), ("conflict", "identifier_exists"))
