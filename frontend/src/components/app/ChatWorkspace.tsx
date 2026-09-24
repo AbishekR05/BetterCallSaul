@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { turnsApi, Citation, GroundedAnswerResponse } from '../../api/turnsApi';
+import { sessionsApi } from '../../api/sessionsApi';
 import { ApiError } from '../../api/client';
 import { ChatMessage } from './ChatMessage';
 import { AgentStepStatus, StepState } from './AgentStepStatus';
@@ -53,8 +54,32 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setMessages([]);
+    if (!sessionId) {
+      setMessages([]);
+      return;
+    }
     setError(null);
+    sessionsApi.getSession(sessionId).then((data) => {
+      if (data.turns && data.turns.length > 0) {
+        const loadedMsgs: DisplayTurn[] = data.turns.map((t) => ({
+          turn_id: t.turn_id,
+          user_message: t.user_query,
+          assistant_message: t.answer_detail,
+          citations: t.citations || [],
+          timestamp: t.timestamp_utc
+        }));
+        setMessages(loadedMsgs);
+        // Set latest citations into evidence panel state if present
+        const lastWithCites = loadedMsgs.slice().reverse().find(m => m.citations && m.citations.length > 0);
+        if (lastWithCites) {
+          setActiveCitations(lastWithCites.citations);
+        }
+      } else {
+        setMessages([]);
+      }
+    }).catch(() => {
+      setMessages([]);
+    });
   }, [sessionId]);
 
   useEffect(() => {

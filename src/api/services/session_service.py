@@ -26,6 +26,23 @@ class SessionService:
         self.session_store = session_store
 
     def _map_to_response(self, session: ConversationSession) -> SessionResponse:
+        turn_list = []
+        for t in getattr(session, "turns", []):
+            answer_detail = ""
+            citations = []
+            if hasattr(t, "grounded_answer") and t.grounded_answer:
+                answer_detail = getattr(t.grounded_answer, "answer_detail", "") or getattr(t.grounded_answer, "answer_summary", "")
+                raw_cites = getattr(t.grounded_answer, "citations", [])
+                citations = [c.model_dump() if hasattr(c, "model_dump") else dict(c) for c in raw_cites]
+            turn_list.append({
+                "turn_id": t.turn_id,
+                "turn_index": t.turn_index,
+                "user_query": t.user_query,
+                "answer_detail": answer_detail,
+                "citations": citations,
+                "timestamp_utc": getattr(t, "timestamp_utc", ""),
+            })
+
         return SessionResponse(
             session_id=UUID(session.session_id),
             created_at_utc=datetime.fromisoformat(session.created_at_utc),
@@ -33,6 +50,7 @@ class SessionService:
             expires_at_utc=datetime.fromisoformat(session.expires_at_utc),
             status=session.status,
             turn_count=session.turn_count,
+            turns=turn_list,
         )
 
     def create_session(self, user_id: UUID) -> SessionResponse:

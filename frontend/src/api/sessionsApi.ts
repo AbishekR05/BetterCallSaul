@@ -1,6 +1,17 @@
 // frontend/src/api/sessionsApi.ts
 import { fetchApi } from './client';
 
+import { Citation } from './turnsApi';
+
+export interface TurnItem {
+  turn_id: string;
+  turn_index: number;
+  user_query: string;
+  answer_detail: string;
+  citations: Citation[];
+  timestamp_utc: string;
+}
+
 export interface SessionItem {
   session_id: string;
   created_at_utc: string;
@@ -8,6 +19,7 @@ export interface SessionItem {
   expires_at_utc: string;
   status: string;
   turn_count: number;
+  turns?: TurnItem[];
 }
 
 export interface SessionListResponse {

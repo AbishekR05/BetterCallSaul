@@ -5,7 +5,7 @@ Enforces ConfigDict(extra="forbid", str_strip_whitespace=True).
 """
 
 from datetime import datetime
-from typing import List
+from typing import List, Dict, Any
 from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -28,6 +28,7 @@ class SessionResponse(BaseModel):
     expires_at_utc: datetime = Field(..., description="Session expiration timestamp")
     status: str = Field(..., description="Session status ('active', 'expired', 'closed')")
     turn_count: int = Field(default=0, description="Total conversation turns in session")
+    turns: List[Dict[str, Any]] = Field(default_factory=list, description="List of turns in session")
 
 
 class SessionListResponse(BaseModel):

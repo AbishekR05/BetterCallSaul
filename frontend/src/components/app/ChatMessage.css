@@ -68,7 +68,7 @@
 }
 
 .user-row .message-bubble {
-  background: var(--accent-gradient);
+  background: var(--accent-primary);
   border: none;
   color: #ffffff;
 }

@@ -95,7 +95,7 @@ class GeminiClient:
             except Exception as sdk_err:
                 print(f"[GeminiClient SDK Warning] {sdk_err}. Falling back to REST API...")
 
-        # 2. REST Endpoint Fallback
+        # 2. REST Endpoint Fallback with retry on transient 503/429 errors
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
         headers = {"Content-Type": "application/json"}
         payload = {
@@ -110,9 +110,18 @@ class GeminiClient:
             }
         }
 
-        res = requests.post(url, headers=headers, json=payload, timeout=30)
-        res.raise_for_status()
-        data = res.json()
+        max_attempts = 2
+        for attempt in range(max_attempts):
+            try:
+                res = requests.post(url, headers=headers, json=payload, timeout=30)
+                res.raise_for_status()
+                data = res.json()
+                break
+            except requests.exceptions.HTTPError as http_err:
+                if (res.status_code in (503, 429)) and attempt < max_attempts - 1:
+                    time.sleep(1.0)
+                    continue
+                raise http_err
 
         elapsed_ms = (time.time() - start_time) * 1000.0
 
