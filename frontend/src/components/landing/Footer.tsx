@@ -2,17 +2,34 @@ import React from 'react';
 import './Footer.css';
 
 export const Footer: React.FC = () => {
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    if (targetId === 'top') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <footer className="footer-editorial">
       <div className="container">
         <div className="footer-top">
           <div className="footer-brand font-serif">
-            <div className="footer-logo">
+            <a 
+              href="#top" 
+              className="footer-logo"
+              onClick={(e) => handleNavClick(e, 'top')}
+            >
               <svg className="footer-scale-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
                 <path d="M12 3v18M4 7h16M4 7l4 8M12 7l-4 8M12 7l4 8M20 7l-4 8M2 15h8M14 15h8" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <span className="logo-text">BetterCallSaul</span>
-            </div>
+            </a>
             <p className="footer-tagline font-sans">
               Deterministic, audit-ready Indian statutory retrieval &amp; grounded reasoning platform.
             </p>
@@ -21,19 +38,19 @@ export const Footer: React.FC = () => {
           <div className="footer-links font-sans">
             <div className="footer-col">
               <h4>Navigation</h4>
-              <a href="#about">About us</a>
-              <a href="#values">Our Value</a>
-              <a href="#domains">Practice Areas</a>
-              <a href="#how-it-works">Workflow</a>
-              <a href="#plans">Pricing</a>
+              <a href="#about" onClick={(e) => handleNavClick(e, 'about')}>About us</a>
+              <a href="#values" onClick={(e) => handleNavClick(e, 'values')}>Our Value</a>
+              <a href="#domains" onClick={(e) => handleNavClick(e, 'domains')}>Practice Areas</a>
+              <a href="#how-it-works" onClick={(e) => handleNavClick(e, 'how-it-works')}>Workflow</a>
+              <a href="#plans" onClick={(e) => handleNavClick(e, 'plans')}>Pricing</a>
             </div>
 
             <div className="footer-col">
               <h4>Statutory Framework</h4>
-              <a href="#domains">BNS 2023</a>
-              <a href="#domains">BNSS 2023</a>
-              <a href="#domains">BSS 2023</a>
-              <a href="#domains">IPC Bridge Map</a>
+              <a href="#domains" onClick={(e) => handleNavClick(e, 'domains')}>BNS 2023</a>
+              <a href="#domains" onClick={(e) => handleNavClick(e, 'domains')}>BNSS 2023</a>
+              <a href="#domains" onClick={(e) => handleNavClick(e, 'domains')}>BSS 2023</a>
+              <a href="#domains" onClick={(e) => handleNavClick(e, 'domains')}>IPC Bridge Map</a>
             </div>
           </div>
         </div>
