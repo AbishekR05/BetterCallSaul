@@ -32,7 +32,7 @@ export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
             </button>
           </div>
 
-          {/* Supporting Card Right (Aligned with bottom row in Playfair Display serif font) */}
+          {/* Supporting Card Right */}
           <div className="hero-supporting-card-bottom">
             <h3 className="card-badge-title font-serif">Grounded in Indian Law</h3>
             <p className="card-badge-text">

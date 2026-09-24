@@ -11,9 +11,9 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onGetStarted }) => {
       <div className="container">
         <div className="cta-warm-card">
           <div className="cta-inner-content">
-            <h2 className="cta-title font-serif">Ready to Elevate Your Legal Research?</h2>
+            <h2 className="cta-title font-serif">Ready to Get Instant Legal Answers?</h2>
             <p className="cta-description">
-              Query statutory provisions, cross-reference new penal codes (BNS, BNSS, BSS), and obtain grounded citations in sub-second latency.
+              Search new Indian laws, compare old and new penal sections, and get verified legal guidance in seconds.
             </p>
             <div className="cta-actions">
               <button className="btn btn-white cta-btn" onClick={onGetStarted}>

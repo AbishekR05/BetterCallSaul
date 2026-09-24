@@ -4,23 +4,23 @@ import './Values.css';
 const values = [
   {
     num: '01',
-    title: 'Deterministic Grounding',
-    description: 'Every answer is strictly constrained to official statutory text. No hallucinated legal sections or arbitrary interpretations.'
+    title: '100% Accurate & Verified',
+    description: 'Every answer comes directly from official law books. No made-up laws or false sections.'
   },
   {
     num: '02',
-    title: 'Sub-Second Latency',
-    description: 'Engineered with Phase 3.0 vector indexing and Phase 3.1 rate limiting for <600ms end-to-end response generation.'
+    title: 'Instant Search Results',
+    description: 'Find relevant legal sections and clear explanations in less than a second.'
   },
   {
     num: '03',
-    title: 'Audit-Ready Citations',
-    description: 'Every legal argument includes explicit statutory section tags and an interactive statutory evidence drawer.'
+    title: 'Clear Legal Sources',
+    description: 'Every answer shows the exact act, section, and law reference so you can verify it yourself.'
   },
   {
     num: '04',
-    title: 'Cryptographic Security',
-    description: 'JWT tokens hashed via SHA-256 at rest, request rate-limiting, and sanitized DOMPurify XSS protections.'
+    title: 'Private & Secure',
+    description: 'Your search history and questions are encrypted and kept strictly confidential.'
   }
 ];
 
@@ -30,9 +30,9 @@ export const Values: React.FC = () => {
       <div className="container">
         <div className="values-header">
           <span className="section-eyebrow">Our Value</span>
-          <h2 className="section-title font-serif">Built for Precision in Litigation</h2>
+          <h2 className="section-title font-serif">Why You Can Trust BetterCallSaul</h2>
           <p className="section-subtitle">
-            Unwavering legal accuracy engineered specifically for Indian criminal and statutory jurisprudence.
+            Clear, accurate legal guidance designed for everyone.
           </p>
         </div>
 

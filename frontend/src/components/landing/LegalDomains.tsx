@@ -4,43 +4,35 @@ import './LegalDomains.css';
 const domains = [
   {
     title: 'Criminal Defense & BNS',
-    description: 'Comprehensive coverage of offenses against person and property under Bharatiya Nyaya Sanhita (BNS) 2023.',
-    highlight: true
+    description: 'Understand laws covering crimes, penalties, and defense under the new Bharatiya Nyaya Sanhita (BNS) 2023.'
   },
   {
-    title: 'Procedural Compliance & BNSS',
-    description: 'Investigation, FIR registration, arrest rules, and trial procedures under Bharatiya Nagarik Suraksha Sanhita 2023.',
-    highlight: false
+    title: 'Police & Court Procedures (BNSS)',
+    description: 'Learn about FIR filing, police investigation, arrest rules, and court procedures under BNSS 2023.'
   },
   {
-    title: 'Evidence & Digital Forensics',
-    description: 'Admissibility of electronic records, certificates, and primary/secondary evidence under BSS 2023.',
-    highlight: false
+    title: 'Digital Evidence & Forensics',
+    description: 'Rules for submitting electronic records, mobile evidence, and certificates in court under BSS 2023.'
   },
   {
-    title: 'Constitutional & Rights',
-    description: 'Statutory alignment with Fundamental Rights under Articles 20, 21, and 22 of the Constitution of India.',
-    highlight: false
+    title: 'Constitutional Rights',
+    description: 'Know your fundamental rights during arrest, questioning, and legal protection under Indian Law.'
   },
   {
-    title: 'Commercial & Economic Offenses',
-    description: 'Financial crimes, breach of trust, cheating, and corporate fraud provisions under BNS 2023.',
-    highlight: false
+    title: 'Financial & Business Fraud',
+    description: 'Clear guidance on cheating, breach of trust, corporate fraud, and economic offenses.'
   },
   {
     title: 'Bail & Custody Framework',
-    description: 'Navigating regular, anticipatory, and interim bail applications under new BNSS provisions.',
-    highlight: true
+    description: 'Understand how to apply for regular, anticipatory, and emergency bail under new laws.'
   },
   {
-    title: 'Appellate & Revision Strategy',
-    description: 'Appeals, revisions, and inherent High Court powers under BNSS Section 528.',
-    highlight: false
+    title: 'Appeals & High Court Actions',
+    description: 'How to appeal court decisions or request High Court intervention under new procedures.'
   },
   {
-    title: 'IPC to BNS Statutory Bridge',
-    description: 'Instant cross-referencing between legacy Indian Penal Code sections and corresponding 2023 BNS clauses.',
-    highlight: false
+    title: 'Old IPC to New BNS Converter',
+    description: 'Easily match old Indian Penal Code (IPC) section numbers to their new BNS counterparts.'
   }
 ];
 
@@ -50,9 +42,9 @@ export const LegalDomains: React.FC = () => {
       <div className="container">
         <div className="domains-header">
           <span className="section-eyebrow">Practice Areas</span>
-          <h2 className="section-title font-serif">Explore 8 Specialized Legal Domains</h2>
+          <h2 className="section-title font-serif">Explore 8 Legal Practice Areas</h2>
           <p className="section-subtitle">
-            Engineered to cover every dimension of modern Indian criminal law, procedure, and statutory evidence.
+            Simple, clear explanations across criminal law, court procedures, evidence, and your rights.
           </p>
         </div>
 
@@ -60,7 +52,7 @@ export const LegalDomains: React.FC = () => {
           {domains.map((domain, index) => (
             <div 
               key={index} 
-              className={`domain-editorial-card ${domain.highlight ? 'featured-orange' : ''}`}
+              className="domain-editorial-card hover-orange"
             >
               <h3 className="domain-card-title font-serif">{domain.title}</h3>
               <p className="domain-card-desc">{domain.description}</p>

@@ -11,9 +11,9 @@ export const Plans: React.FC<PlansProps> = ({ onSelectPlan }) => {
       <div className="container">
         <div className="plans-header">
           <span className="section-eyebrow">Pricing</span>
-          <h2 className="section-title font-serif">Designed for Counsel &amp; Enterprise</h2>
+          <h2 className="section-title font-serif">Simple Plans for Everyone</h2>
           <p className="section-subtitle">
-            Scale statutory search and intelligence across independent practice or law firm teams.
+            Choose the option that best fits your legal research needs.
           </p>
         </div>
 
@@ -21,20 +21,20 @@ export const Plans: React.FC<PlansProps> = ({ onSelectPlan }) => {
           {/* Free Tier Card */}
           <div className="plan-card light-tone">
             <div className="plan-header">
-              <h3 className="plan-name font-serif">Independent Counsel</h3>
+              <h3 className="plan-name font-serif">Basic Access</h3>
               <div className="plan-price">
                 <span className="amount font-serif">₹0</span>
                 <span className="period">/ month</span>
               </div>
-              <p className="plan-desc">For advocates and legal researchers needing fast BNS/BNSS statutory lookups.</p>
+              <p className="plan-desc">For individuals, advocates, and students needing quick law searches.</p>
             </div>
 
             <ul className="plan-features">
-              <li><span className="tick-icon">✓</span> 50 Statutory queries / month</li>
-              <li><span className="tick-icon">✓</span> BNS, BNSS &amp; BSS provision indexing</li>
-              <li><span className="tick-icon">✓</span> Hybrid semantic vector search</li>
-              <li><span className="tick-icon">✓</span> Interactive statutory evidence drawer</li>
-              <li><span className="tick-icon">✓</span> Sub-second latency responses</li>
+              <li><span className="tick-icon">✓</span> 50 Legal queries / month</li>
+              <li><span className="tick-icon">✓</span> Search BNS, BNSS &amp; BSS laws</li>
+              <li><span className="tick-icon">✓</span> Plain-English legal explanations</li>
+              <li><span className="tick-icon">✓</span> View official section sources</li>
+              <li><span className="tick-icon">✓</span> Fast response time</li>
             </ul>
 
             <button className="btn btn-secondary plan-btn" onClick={onSelectPlan}>
@@ -46,21 +46,21 @@ export const Plans: React.FC<PlansProps> = ({ onSelectPlan }) => {
           <div className="plan-card dark-tone">
             <div className="plan-badge-pill">MOST POPULAR</div>
             <div className="plan-header">
-              <h3 className="plan-name font-serif">Chambers &amp; Litigation</h3>
+              <h3 className="plan-name font-serif">Chambers &amp; Professional</h3>
               <div className="plan-price">
                 <span className="amount font-serif">₹4,999</span>
                 <span className="period">/ month</span>
               </div>
-              <p className="plan-desc">For litigation firms requiring unlimited statutory analysis and audit exports.</p>
+              <p className="plan-desc">For legal chambers, advocates, and law firms needing unlimited searches.</p>
             </div>
 
             <ul className="plan-features">
-              <li><span className="tick-icon orange">✓</span> Unlimited Statutory queries</li>
-              <li><span className="tick-icon orange">✓</span> Full BNS, BNSS, BSS &amp; IPC mapping</li>
-              <li><span className="tick-icon orange">✓</span> High-priority re-ranking pipeline</li>
-              <li><span className="tick-icon orange">✓</span> Multi-turn session persistence</li>
-              <li><span className="tick-icon orange">✓</span> Export audit-ready statutory briefs</li>
-              <li><span className="tick-icon orange">✓</span> Dedicated support &amp; SLA guarantees</li>
+              <li><span className="tick-icon orange">✓</span> Unlimited Legal queries</li>
+              <li><span className="tick-icon orange">✓</span> Complete old IPC to new BNS mapping</li>
+              <li><span className="tick-icon orange">✓</span> High-speed priority engine</li>
+              <li><span className="tick-icon orange">✓</span> Multi-turn research history</li>
+              <li><span className="tick-icon orange">✓</span> Export audit-ready legal summaries</li>
+              <li><span className="tick-icon orange">✓</span> Dedicated support</li>
             </ul>
 
             <button className="btn btn-primary plan-btn" onClick={onSelectPlan}>

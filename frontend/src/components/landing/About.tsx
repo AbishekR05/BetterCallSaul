@@ -20,13 +20,13 @@ export const About: React.FC = () => {
         <div className="about-content-box">
           <span className="section-eyebrow">About us</span>
           <h2 className="section-title font-serif">
-            Bridging Legacy Penal Codes with 2023 Statutory Reform
+            Understand India’s New Legal System with Ease
           </h2>
           <p className="about-paragraph">
-            On July 1, 2024, India enforced the Bharatiya Nyaya Sanhita (BNS), Bharatiya Nagarik Suraksha Sanhita (BNSS), and Bharatiya Sakshya Sanhita (BSS), replacing the 160-year-old IPC, CrPC, and Indian Evidence Act.
+            In 2024, India updated its criminal laws, replacing the 160-year-old Indian Penal Code (IPC) with the new Bharatiya Nyaya Sanhita (BNS), BNSS, and BSS.
           </p>
           <p className="about-paragraph highlight">
-            BetterCallSaul provides advocates, legal researchers, and judicial clerks with an intelligent, audit-ready reasoning engine. It translates statutory queries across both legacy and new frameworks with exact legal citation backing.
+            BetterCallSaul helps lawyers, students, and citizens search, compare, and understand both old and new legal sections instantly with verified statutory citations.
           </p>
 
           <div className="about-metrics-row">
@@ -35,8 +35,8 @@ export const About: React.FC = () => {
               <span className="metric-desc">Grounded in verified BNS &amp; BNSS provisions</span>
             </div>
             <div className="about-metric">
-              <span className="metric-val font-serif">&lt;600ms</span>
-              <span className="metric-desc">End-to-end vector retrieval latency</span>
+              <span className="metric-val font-serif">&lt;1 Sec</span>
+              <span className="metric-desc">Instant, accurate legal answers</span>
             </div>
           </div>
         </div>

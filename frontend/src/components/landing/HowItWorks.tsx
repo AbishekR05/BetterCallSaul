@@ -4,28 +4,28 @@ import './HowItWorks.css';
 const steps = [
   {
     num: '01',
-    title: 'Query Processing & Intent',
-    description: 'System normalizes query, extracts statutory entities, and structures multi-jurisdictional parameters.'
+    title: 'Ask Your Question',
+    description: 'Type any legal query or question in plain English or section numbers.'
   },
   {
     num: '02',
-    title: 'Hybrid Vector Retrieval',
-    description: 'Queries BNS/BNSS/BSS vector indexes using dense semantic embeddings alongside BM25 sparse matching.'
+    title: 'Search Official Laws',
+    description: 'Our engine scans official databases of India\'s new criminal laws (BNS, BNSS, BSS).'
   },
   {
     num: '03',
-    title: 'Cross-Encoder Re-Ranking',
-    description: 'Top candidate provisions are re-ranked through a cross-encoder model to maximize precision.'
+    title: 'Find Relevant Sections',
+    description: 'The system identifies the exact penal sections and provisions matching your query.'
   },
   {
     num: '04',
-    title: 'Grounded Synthesis',
-    description: 'LLM generates plain-English legal explanations strictly bound by retrieved statutory provisions.'
+    title: 'Explain in Plain English',
+    description: 'Complex legal jargon is converted into clear, easy-to-read explanations.'
   },
   {
     num: '05',
-    title: 'Citation Audit',
-    description: 'Every statement is dynamically cross-referenced against raw statutory text in the evidence drawer.'
+    title: 'Show Exact Sources',
+    description: 'View original legal clauses and section numbers for complete verification.'
   }
 ];
 
@@ -35,9 +35,9 @@ export const HowItWorks: React.FC = () => {
       <div className="container">
         <div className="how-header">
           <span className="section-eyebrow light">Workflow</span>
-          <h2 className="section-title font-serif text-white">How BetterCallSaul Operates</h2>
+          <h2 className="section-title font-serif text-white">How BetterCallSaul Works in 5 Simple Steps</h2>
           <p className="section-subtitle text-light">
-            A 5-stage deterministic pipeline engineered to deliver audit-ready Indian statutory intelligence.
+            A reliable, step-by-step process to give you verified legal answers.
           </p>
         </div>
 
