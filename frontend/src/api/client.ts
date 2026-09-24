@@ -3,6 +3,7 @@
 export interface ApiErrorPayload {
   error_code?: string;
   message?: string;
+  detail?: string | any[];
   request_id?: string;
 }
 
@@ -13,10 +14,18 @@ export class ApiError extends Error {
   public retryAfterSeconds?: number;
 
   constructor(status: number, payload: ApiErrorPayload, retryAfter?: number) {
-    super(payload.message || `API Error: ${status}`);
+    let msg = payload.message;
+    if (!msg && payload.detail) {
+      if (Array.isArray(payload.detail)) {
+        msg = payload.detail.map((d: any) => `${d.loc ? d.loc.join('.') + ': ' : ''}${d.msg || JSON.stringify(d)}`).join('; ');
+      } else {
+        msg = String(payload.detail);
+      }
+    }
+    super(msg || `API Error: ${status}`);
     this.name = 'ApiError';
     this.status = status;
-    this.errorCode = payload.error_code || (status === 401 ? 'unauthenticated' : 'internal_error');
+    this.errorCode = payload.error_code || (status === 401 ? 'unauthenticated' : status === 422 ? 'validation_error' : 'internal_error');
     this.requestId = payload.request_id || 'unknown';
     this.retryAfterSeconds = retryAfter;
   }

@@ -23,17 +23,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
     setLocalError(null);
     clearError();
 
-    if (!username.trim() || !password.trim()) {
+    const cleanUser = username.trim();
+    const cleanPass = password.trim();
+
+    if (!cleanUser || !cleanPass) {
       setLocalError('Please enter both username and password.');
+      return;
+    }
+
+    if (mode === 'register' && cleanPass.length < 8) {
+      setLocalError('Password must be at least 8 characters long.');
       return;
     }
 
     setIsSubmitting(true);
     try {
       if (mode === 'login') {
-        await login({ auth_identifier: username, password });
+        await login({ auth_identifier: cleanUser, password: cleanPass });
       } else {
-        await register({ auth_identifier: username, password });
+        await register({ auth_identifier: cleanUser, password: cleanPass });
       }
       onClose();
     } catch (err: any) {
@@ -92,7 +100,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
           </div>
 
           <div className="form-group">
-            <label htmlFor="auth-password">Password</label>
+            <label htmlFor="auth-password">Password {mode === 'register' && '(min 8 chars)'}</label>
             <input
               id="auth-password"
               type="password"
