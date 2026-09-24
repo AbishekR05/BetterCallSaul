@@ -1,6 +1,5 @@
 import React from 'react';
 import legalAbstractBg from '../../assets/legal_abstract_bg.jpg';
-import advocatePortrait from '../../assets/advocate_portrait.jpg';
 import './About.css';
 
 export const About: React.FC = () => {
@@ -8,22 +7,13 @@ export const About: React.FC = () => {
     <section id="about" className="about-editorial-section">
       <div className="container about-grid">
         
-        {/* Two-Photo Stacked Collage (Reference Editorial Style) */}
-        <div className="about-visual-collage">
-          <div className="collage-main-card">
-            <img 
-              src={advocatePortrait} 
-              alt="Counsel researching in law library" 
-              className="collage-img-main" 
-            />
-          </div>
-          <div className="collage-secondary-card">
-            <img 
-              src={legalAbstractBg} 
-              alt="Statutory law book collection" 
-              className="collage-img-sec" 
-            />
-          </div>
+        {/* Single Featured Balance & Statutory Image Card */}
+        <div className="about-visual-card">
+          <img 
+            src={legalAbstractBg} 
+            alt="Balance of justice and statutory law book" 
+            className="about-img-featured" 
+          />
         </div>
 
         {/* Text Content */}
