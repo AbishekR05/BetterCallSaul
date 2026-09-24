@@ -1,5 +1,5 @@
 import React from 'react';
-import ladyJusticeHero from '../../assets/lady_justice_hero.jpg';
+import ladyJusticeHero from '../../assets/lady_justice_hero.png';
 import './Hero.css';
 
 interface HeroProps {
