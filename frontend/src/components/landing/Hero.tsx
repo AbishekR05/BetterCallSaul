@@ -20,23 +20,24 @@ export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
 
       <div className="hero-inner-container">
         
-        {/* Supporting Product Card - Positioned inward & lower within Hero composition */}
-        <div className="hero-supporting-card">
-          <h3 className="card-badge-title font-serif">Grounded in Indian Law</h3>
-          <p className="card-badge-text">
-            Get clear answers backed by relevant legislation, judgments, and cited legal sources.
-          </p>
-        </div>
-
-        {/* Bottom Headline & Action Button Row */}
+        {/* Bottom Headline & Right-Aligned Supporting Card Row */}
         <div className="hero-bottom-row">
+          {/* Main Headline Left */}
           <div className="hero-headline-left">
             <h1 className="hero-main-title font-serif">
-              Justice Should Be<br />Everyone,<br />Without Fear
+              Justice Should Be<br />Accessible to Everyone,<br />Without Fear
             </h1>
             <button className="btn btn-white hero-cta-btn" onClick={onGetStarted}>
               Launch Workspace <span className="arrow">↗</span>
             </button>
+          </div>
+
+          {/* Supporting Card Right (Aligned with bottom row in Playfair Display serif font) */}
+          <div className="hero-supporting-card-bottom">
+            <h3 className="card-badge-title font-serif">Grounded in Indian Law</h3>
+            <p className="card-badge-text">
+              Get clear answers backed by relevant legislation, judgments, and cited legal sources.
+            </p>
           </div>
         </div>
 
