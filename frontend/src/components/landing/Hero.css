@@ -28,38 +28,14 @@
 /* Top Row */
 .hero-top-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: flex-start;
   margin-bottom: 40px;
 }
 
-.hero-stats-left {
-  display: flex;
-  gap: 48px;
-}
-
-.stat-block {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-number {
-  font-size: 52px;
-  font-weight: 500;
-  color: #FFFFFF;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-
-.stat-label {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 6px;
-  font-weight: 400;
-}
-
 .hero-text-right {
-  max-width: 340px;
+  max-width: 360px;
+  text-align: right;
 }
 
 .hero-paragraph {
@@ -134,7 +110,7 @@
   margin-left: 6px;
 }
 
-/* Floating White Card (Exact Reference Match) */
+/* Floating White Card */
 .hero-card-right {
   background: #FFFFFF;
   color: #1A1714;
@@ -233,8 +209,10 @@
     padding: 0 20px;
   }
   .hero-top-row {
-    flex-direction: column;
-    gap: 24px;
+    justify-content: flex-start;
+  }
+  .hero-text-right {
+    text-align: left;
   }
   .hero-card-right {
     width: 100%;

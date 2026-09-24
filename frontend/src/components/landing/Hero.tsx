@@ -13,22 +13,11 @@ export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
     <section className="hero-dark-frame">
       <div className="hero-inner-container">
         
-        {/* Top Header Stats & Text Row */}
+        {/* Top Header Paragraph Row */}
         <div className="hero-top-row">
-          <div className="hero-stats-left">
-            <div className="stat-block">
-              <span className="stat-number font-serif">95%</span>
-              <span className="stat-label">Countersuit field</span>
-            </div>
-            <div className="stat-block">
-              <span className="stat-number font-serif">77%</span>
-              <span className="stat-label">Cases win</span>
-            </div>
-          </div>
-
           <div className="hero-text-right">
             <p className="hero-paragraph">
-              Need instant legal assistance? Query BNS, BNSS &amp; BSS provisions with grounded hybrid vector search and audit-ready statutory citations.
+              Need instant statutory intelligence? Query BNS, BNSS &amp; BSS provisions with grounded hybrid vector search and audit-ready legal citations.
             </p>
           </div>
         </div>
@@ -54,7 +43,7 @@ export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
             </button>
           </div>
 
-          {/* Floating White Card (Reference Image Exact Match) */}
+          {/* Floating White Card */}
           <div className="hero-card-right">
             <div className="card-top-content">
               {/* Avatar Stack */}
