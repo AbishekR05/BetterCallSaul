@@ -12,15 +12,15 @@
 .plans-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 36px;
-  max-width: 960px;
+  gap: 40px;
+  max-width: 1240px;
   margin: 0 auto;
 }
 
 .plan-card {
   position: relative;
   border-radius: var(--radius-lg);
-  padding: 44px 36px;
+  padding: 48px 40px;
   display: flex;
   flex-direction: column;
   transition: transform var(--transition-normal);
@@ -68,7 +68,7 @@
 }
 
 .plan-name {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 600;
   margin-bottom: 12px;
 }
@@ -80,7 +80,7 @@
 }
 
 .plan-price .amount {
-  font-size: 48px;
+  font-size: 52px;
   font-weight: 700;
   line-height: 1;
 }
@@ -92,7 +92,7 @@
 }
 
 .plan-desc {
-  font-size: 14px;
+  font-size: 14.5px;
   line-height: 1.5;
   opacity: 0.8;
 }
@@ -105,7 +105,7 @@
 }
 
 .plan-features li {
-  font-size: 14.5px;
+  font-size: 15px;
   margin-bottom: 14px;
   display: flex;
   align-items: center;
@@ -128,7 +128,7 @@
   font-size: 14.5px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .plans-grid {
     grid-template-columns: 1fr;
   }

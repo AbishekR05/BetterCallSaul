@@ -7,19 +7,19 @@
 .cta-warm-card {
   background: linear-gradient(135deg, #D9622B 0%, #B84A1A 100%);
   border-radius: 28px;
-  padding: 80px 40px;
+  padding: 80px 60px;
   text-align: center;
   color: #FFFFFF;
   box-shadow: 0 20px 50px rgba(217, 98, 43, 0.25);
 }
 
 .cta-inner-content {
-  max-width: 680px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
 .cta-title {
-  font-size: 42px;
+  font-size: 48px;
   font-weight: 600;
   color: #FFFFFF;
   margin-bottom: 20px;
@@ -27,7 +27,7 @@
 }
 
 .cta-description {
-  font-size: 17px;
+  font-size: 18px;
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.6;
   margin-bottom: 36px;
@@ -39,8 +39,8 @@
 }
 
 .cta-btn {
-  padding: 16px 36px;
-  font-size: 15px;
+  padding: 18px 40px;
+  font-size: 16px;
 }
 
 @media (max-width: 768px) {
