@@ -4,12 +4,13 @@
   left: 0;
   right: 0;
   z-index: 100;
-  padding: 24px 40px;
+  padding: 28px 0;
 }
 
 .hero-navbar-container {
-  max-width: 1320px;
+  max-width: 1560px;
   margin: 0 auto;
+  padding: 0 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -91,9 +92,18 @@
   cursor: pointer;
 }
 
+@media (max-width: 1024px) {
+  .hero-navbar-container {
+    padding: 0 32px;
+  }
+}
+
 @media (max-width: 900px) {
   .hero-navbar {
-    padding: 16px 20px;
+    padding: 16px 0;
+  }
+  .hero-navbar-container {
+    padding: 0 20px;
   }
   .hero-navbar-links {
     display: none;

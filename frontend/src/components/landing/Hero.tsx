@@ -10,6 +10,14 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
   return (
     <section className="hero-dark-frame">
+      {/* Full-screen background image with subtle vignette overlay */}
+      <div 
+        className="hero-bg-cover"
+        style={{ backgroundImage: `url(${ladyJusticeHero})` }}
+      >
+        <div className="hero-vignette-overlay"></div>
+      </div>
+
       <div className="hero-inner-container">
         
         {/* Top Header Paragraph Row */}
@@ -19,16 +27,6 @@ export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
               Need instant statutory intelligence? Query BNS, BNSS &amp; BSS provisions with grounded hybrid vector search and audit-ready legal citations.
             </p>
           </div>
-        </div>
-
-        {/* Center Spotlight & Lady Justice Artwork */}
-        <div className="hero-center-visual">
-          <img 
-            src={ladyJusticeHero} 
-            alt="Lady Justice Statue Artwork" 
-            className="hero-statue-img"
-          />
-          <div className="hero-spotlight-overlay"></div>
         </div>
 
         {/* Bottom Headline & Action Button Row */}
