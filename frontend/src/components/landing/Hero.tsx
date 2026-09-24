@@ -20,13 +20,12 @@ export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
 
       <div className="hero-inner-container">
         
-        {/* Top Header Paragraph Row */}
-        <div className="hero-top-row">
-          <div className="hero-text-right">
-            <p className="hero-paragraph">
-              Need instant statutory intelligence? Query BNS, BNSS &amp; BSS provisions with grounded hybrid vector search and audit-ready legal citations.
-            </p>
-          </div>
+        {/* Supporting Product Card - Positioned inward & lower within Hero composition */}
+        <div className="hero-supporting-card">
+          <h3 className="card-badge-title font-serif">Grounded in Indian Law</h3>
+          <p className="card-badge-text">
+            Get clear answers backed by relevant legislation, judgments, and cited legal sources.
+          </p>
         </div>
 
         {/* Bottom Headline & Action Button Row */}
