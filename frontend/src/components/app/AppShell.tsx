@@ -42,7 +42,7 @@ export const AppShell: React.FC = () => {
             >
               ☰
             </button>
-            <span className="workspace-brand-label">Legal Reasoning Workspace</span>
+            <span className="workspace-brand-label font-serif">Legal Reasoning Workspace</span>
           </div>
 
           <div className="bar-right">
@@ -61,3 +61,5 @@ export const AppShell: React.FC = () => {
     </div>
   );
 };
+
+export default AppShell;

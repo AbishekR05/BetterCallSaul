@@ -1,5 +1,6 @@
 import React from 'react';
 import ladyJusticeHero from '../../assets/lady_justice_hero.jpg';
+import advocatePortrait from '../../assets/advocate_portrait.jpg';
 import './Hero.css';
 
 interface HeroProps {
@@ -7,64 +8,76 @@ interface HeroProps {
   onLearnMore: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onGetStarted, onLearnMore }) => {
+export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
   return (
-    <section className="hero-section">
-      <div className="container hero-grid">
-        <div className="hero-content">
-          <div className="hero-badge">
-            <span className="badge-pulse"></span>
-            <span>Grounded Indian Penal Code Intelligence</span>
+    <section className="hero-dark-frame">
+      <div className="hero-inner-container">
+        
+        {/* Top Header Stats & Text Row */}
+        <div className="hero-top-row">
+          <div className="hero-stats-left">
+            <div className="stat-block">
+              <span className="stat-number font-serif">95%</span>
+              <span className="stat-label">Countersuit field</span>
+            </div>
+            <div className="stat-block">
+              <span className="stat-number font-serif">77%</span>
+              <span className="stat-label">Cases win</span>
+            </div>
           </div>
 
-          <h1 className="hero-title">
-            Deterministic Legal Research & <span className="hero-highlight">Statutory Reasoning</span>
-          </h1>
-
-          <p className="hero-description">
-            Query the new Bharatiya Nyaya Sanhita (BNS), BNSS, and BSS provisions with sub-second hybrid vector search, cross-encoder re-ranking, and audit-ready statutory citations.
-          </p>
-
-          <div className="hero-actions">
-            <button className="btn btn-primary btn-lg" onClick={onGetStarted}>
-              Enter Legal Workspace →
-            </button>
-            <button className="btn btn-secondary btn-lg" onClick={onLearnMore}>
-              Explore Architecture
-            </button>
-          </div>
-
-          <div className="hero-stats">
-            <div className="stat-item">
-              <span className="stat-value">&lt;600ms</span>
-              <span className="stat-label">End-to-End Latency</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-value">100%</span>
-              <span className="stat-label">Statutory Grounding</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-value">BNS / BNSS</span>
-              <span className="stat-label">2023 Statutory Corpus</span>
-            </div>
+          <div className="hero-text-right">
+            <p className="hero-paragraph">
+              Need instant legal assistance? Query BNS, BNSS &amp; BSS provisions with grounded hybrid vector search and audit-ready statutory citations.
+            </p>
           </div>
         </div>
 
-        <div className="hero-visual">
-          <div className="hero-image-card">
-            <img 
-              src={ladyJusticeHero} 
-              alt="Lady Justice Artwork representing Indian Statutory Intelligence" 
-              className="hero-image"
-            />
-            <div className="hero-image-overlay">
-              <div className="overlay-badge">
-                <span className="icon">📜</span>
-                <span>Deterministic Evidence Corpus</span>
+        {/* Center Spotlight & Lady Justice Artwork */}
+        <div className="hero-center-visual">
+          <img 
+            src={ladyJusticeHero} 
+            alt="Lady Justice Statue Artwork" 
+            className="hero-statue-img"
+          />
+          <div className="hero-spotlight-overlay"></div>
+        </div>
+
+        {/* Bottom Headline, Button & Overlapping Stat Card Row */}
+        <div className="hero-bottom-row">
+          <div className="hero-headline-left">
+            <h1 className="hero-main-title font-serif">
+              Justice Should Be<br />Everyone,<br />Without Fear
+            </h1>
+            <button className="btn btn-white hero-cta-btn" onClick={onGetStarted}>
+              Launch Workspace <span className="arrow">↗</span>
+            </button>
+          </div>
+
+          {/* Floating White Card (Reference Image Exact Match) */}
+          <div className="hero-card-right">
+            <div className="card-top-content">
+              {/* Avatar Stack */}
+              <div className="avatar-stack">
+                <div className="avatar-circle av-1">A</div>
+                <div className="avatar-circle av-2">R</div>
+                <div className="avatar-circle av-3">S</div>
               </div>
+              <div className="card-stat font-serif">152k+</div>
+              <div className="card-stat-label">Statutory Searches</div>
+            </div>
+
+            {/* Portrait Thumbnail */}
+            <div className="card-photo-wrapper">
+              <img 
+                src={advocatePortrait} 
+                alt="Advocate researching in law library" 
+                className="card-photo" 
+              />
             </div>
           </div>
         </div>
+
       </div>
     </section>
   );

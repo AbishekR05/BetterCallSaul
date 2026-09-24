@@ -3,22 +3,22 @@ import './Values.css';
 
 const values = [
   {
-    icon: '🎯',
+    num: '01',
     title: 'Deterministic Grounding',
     description: 'Every answer is strictly constrained to official statutory text. No hallucinated legal sections or arbitrary interpretations.'
   },
   {
-    icon: '⚡',
+    num: '02',
     title: 'Sub-Second Latency',
     description: 'Engineered with Phase 3.0 vector indexing and Phase 3.1 rate limiting for <600ms end-to-end response generation.'
   },
   {
-    icon: '📜',
+    num: '03',
     title: 'Audit-Ready Citations',
     description: 'Every legal argument includes explicit statutory section tags and an interactive statutory evidence drawer.'
   },
   {
-    icon: '🔒',
+    num: '04',
     title: 'Cryptographic Security',
     description: 'JWT tokens hashed via SHA-256 at rest, request rate-limiting, and sanitized DOMPurify XSS protections.'
   }
@@ -26,11 +26,11 @@ const values = [
 
 export const Values: React.FC = () => {
   return (
-    <section id="values" className="values-section">
+    <section id="values" className="values-editorial-section">
       <div className="container">
         <div className="values-header">
-          <span className="section-badge">CORE PRINCIPLES</span>
-          <h2 className="section-title">Built for Precision in Litigation</h2>
+          <span className="section-eyebrow">Our Value</span>
+          <h2 className="section-title font-serif">Built for Precision in Litigation</h2>
           <p className="section-subtitle">
             Unwavering legal accuracy engineered specifically for Indian criminal and statutory jurisprudence.
           </p>
@@ -38,10 +38,10 @@ export const Values: React.FC = () => {
 
         <div className="values-grid">
           {values.map((v, i) => (
-            <div key={i} className="value-card">
-              <div className="value-icon">{v.icon}</div>
-              <h3 className="value-title">{v.title}</h3>
-              <p className="value-desc">{v.description}</p>
+            <div key={i} className="value-card-text">
+              <span className="value-num font-serif">{v.num}</span>
+              <h3 className="value-card-title font-serif">{v.title}</h3>
+              <p className="value-card-desc">{v.description}</p>
             </div>
           ))}
         </div>

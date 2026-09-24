@@ -52,13 +52,11 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Clear messages on session change
   useEffect(() => {
     setMessages([]);
     setError(null);
   }, [sessionId]);
 
-  // Scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isProcessing, error]);
@@ -74,7 +72,6 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
     const tempTurnId = `turn-${Date.now()}`;
     const startTime = Date.now();
 
-    // Push optimistic user message
     const tempUserMsg: DisplayTurn = {
       turn_id: tempTurnId,
       user_message: textToSubmit,
@@ -84,7 +81,6 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
     };
     setMessages((prev) => [...prev, tempUserMsg]);
 
-    // Simulated reasoning pipeline steps
     setCurrentStep('understanding');
     const stepTimer1 = setTimeout(() => setCurrentStep('searching'), 300);
     const stepTimer2 = setTimeout(() => setCurrentStep('checking_evidence'), 700);
@@ -143,8 +139,7 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
     return (
       <div className="workspace-empty-state">
         <div className="empty-content">
-          <span className="empty-icon">⚖️</span>
-          <h2>Select or Create a Legal Research Session</h2>
+          <h2 className="font-serif">Select or Create a Legal Research Session</h2>
           <p>Choose a multi-turn conversation from the sidebar rail to begin querying statutory provisions.</p>
         </div>
       </div>
@@ -157,7 +152,7 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
         {/* Header */}
         <div className="workspace-header">
           <div className="session-info">
-            <h2 className="session-title-text">{sessionTitle || 'Statutory Workspace Session'}</h2>
+            <h2 className="session-title-text font-serif">{sessionTitle || 'Statutory Workspace Session'}</h2>
             <span className="session-id-tag">ID: {sessionId.substring(0, 8)}...</span>
           </div>
 
@@ -167,7 +162,7 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
                 className="btn btn-secondary btn-sm"
                 onClick={() => setIsEvidenceOpen(!isEvidenceOpen)}
               >
-                📜 Evidence Drawer ({activeCitations.length})
+                Evidence Drawer ({activeCitations.length})
               </button>
             )}
           </div>
@@ -178,7 +173,7 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
           {messages.length === 0 ? (
             <div className="starter-prompts-container">
               <div className="starter-header">
-                <h3>Select a Statutory Query Starter</h3>
+                <h3 className="font-serif">Select a Statutory Query Starter</h3>
                 <p>Or type your custom legal research question below to execute hybrid vector retrieval.</p>
               </div>
 
@@ -189,7 +184,7 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
                     className="starter-card"
                     onClick={() => handleSubmit(starter.query)}
                   >
-                    <h4>{starter.title}</h4>
+                    <h4 className="font-serif">{starter.title}</h4>
                     <p>{starter.query}</p>
                     <span className="starter-action">Query Provision →</span>
                   </div>
@@ -249,7 +244,7 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
               className="btn btn-primary submit-btn"
               disabled={!prompt.trim() || isProcessing}
             >
-              {isProcessing ? 'Analyzing...' : 'Execute Query ⚖️'}
+              {isProcessing ? 'Analyzing...' : 'Execute Query'}
             </button>
           </form>
           <div className="input-disclaimer">

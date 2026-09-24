@@ -1,95 +1,88 @@
-.domains-section {
-  padding: 100px 0;
-  background: var(--bg-primary);
+/* frontend/src/components/landing/LegalDomains.css */
+.domains-editorial-section {
+  padding: 110px 0;
+  background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-subtle);
 }
 
 .domains-header {
-  text-align: center;
-  max-width: 700px;
-  margin: 0 auto 60px;
+  margin-bottom: 60px;
 }
 
-.domains-grid {
+.domains-asymmetric-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
 }
 
-.domain-card {
-  position: relative;
+.domain-editorial-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 28px;
-  transition: all var(--transition-normal);
+  padding: 40px 32px;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  justify-content: space-between;
+  min-height: 240px;
+  transition: all var(--transition-normal);
 }
 
-.domain-card:hover {
+.domain-editorial-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(217, 93, 36, 0.4);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md);
 }
 
-.domain-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-md);
-  background: rgba(217, 93, 36, 0.1);
+.domain-editorial-card.featured-orange {
+  background: var(--accent-primary);
+  color: #FFFFFF;
+  border-color: var(--accent-primary);
+}
+
+.domain-editorial-card.featured-orange .domain-card-title {
+  color: #FFFFFF;
+}
+
+.domain-editorial-card.featured-orange .domain-card-desc {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.domain-editorial-card.featured-orange .domain-arrow-link {
+  color: #FFFFFF;
+}
+
+.domain-card-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  line-height: 1.3;
+}
+
+.domain-card-desc {
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.domain-arrow-link {
+  font-size: 13.5px;
+  font-weight: 600;
   color: var(--accent-primary);
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  margin-bottom: 20px;
-  transition: transform var(--transition-fast);
+  gap: 6px;
+  margin-top: auto;
 }
 
-.domain-card:hover .domain-icon {
-  transform: scale(1.08);
-  background: var(--accent-primary);
-  color: #ffffff;
-}
-
-.domain-card h3 {
-  font-family: var(--font-heading);
-  font-size: 20px;
-  color: var(--text-primary);
-  margin-bottom: 12px;
-}
-
-.domain-card p {
-  color: var(--text-secondary);
-  font-size: 14px;
-  line-height: 1.6;
-  margin-bottom: 20px;
-  flex-grow: 1;
-}
-
-.domain-topics {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.topic-tag {
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-muted);
-  border: 1px solid var(--border-subtle);
-}
-
-@media (max-width: 768px) {
-  .domains-section {
-    padding: 60px 0;
+@media (max-width: 1024px) {
+  .domains-asymmetric-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
-  
-  .domains-grid {
+}
+
+@media (max-width: 640px) {
+  .domains-asymmetric-grid {
     grid-template-columns: 1fr;
   }
 }

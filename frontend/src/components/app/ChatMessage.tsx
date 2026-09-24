@@ -22,27 +22,21 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
 }) => {
   const isUser = role === 'user';
 
-  // Format content with DOMPurify sanitization
   const getSanitizedContent = () => {
     if (isUser) return content;
 
-    // Convert statutory references like [BNS §103] or [BNSS §174] into clickable badge spans safely
     let formatted = content.replace(/\[(BNS|BNSS|BSS|IPC|CrPC|IEA)\s*(?:§|Sec|Section)?\s*(\d+[^\]]*)\]/gi, (match) => {
       return `<span class="inline-citation-badge" data-citation="${match}">${match}</span>`;
     });
 
-    // Basic markdown conversion (bold, code, linebreaks)
     formatted = formatted
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/\n/g, '<br/>');
 
-    // DOMPurify sanitize
-    const cleanHtml = DOMPurify.sanitize(formatted, {
+    return DOMPurify.sanitize(formatted, {
       ADD_ATTR: ['data-citation', 'class']
     });
-
-    return cleanHtml;
   };
 
   const handleContainerClick = (e: React.MouseEvent) => {
@@ -57,7 +51,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   return (
     <div className={`message-row ${isUser ? 'user-row' : 'assistant-row'}`}>
       <div className="message-avatar">
-        {isUser ? '👤' : '⚖️'}
+        {isUser ? (
+          <span className="user-initial font-serif">A</span>
+        ) : (
+          <svg className="assistant-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 3v18M4 7h16M4 7l4 8M12 7l-4 8M12 7l4 8M20 7l-4 8M2 15h8M14 15h8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
       </div>
 
       <div className="message-bubble-wrapper">
@@ -85,13 +85,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
                 className="evidence-trigger-btn"
                 onClick={() => onOpenEvidence && onOpenEvidence()}
               >
-                📜 {citations.length} Statutory Citation{citations.length > 1 ? 's' : ''} Retrieved
+                {citations.length} Statutory Citation{citations.length > 1 ? 's' : ''} Retrieved <span>→</span>
               </button>
             )}
 
             {latencyMs !== undefined && (
               <span className="latency-tag">
-                ⚡ {(latencyMs / 1000).toFixed(2)}s latency
+                {(latencyMs / 1000).toFixed(2)}s latency
               </span>
             )}
           </div>
@@ -100,3 +100,5 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
     </div>
   );
 };
+
+export default ChatMessage;

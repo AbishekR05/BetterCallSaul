@@ -57,8 +57,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
         </button>
 
         <div className="auth-header">
-          <div className="auth-icon">⚖️</div>
-          <h2 className="auth-title">
+          <svg className="auth-scale-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+            <path d="M12 3v18M4 7h16M4 7l4 8M12 7l-4 8M12 7l4 8M20 7l-4 8M2 15h8M14 15h8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <h2 className="auth-title font-serif">
             {mode === 'login' ? 'Sign In to Workspace' : 'Create Legal Account'}
           </h2>
           <p className="auth-subtitle">
@@ -70,7 +72,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
 
         {(localError || error) && (
           <div className="auth-error">
-            ⚠️ {localError || error}
+            <span className="error-mark">!</span> {localError || error}
           </div>
         )}
 

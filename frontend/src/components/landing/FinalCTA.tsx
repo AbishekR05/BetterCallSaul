@@ -7,17 +7,17 @@ interface FinalCTAProps {
 
 export const FinalCTA: React.FC<FinalCTAProps> = ({ onGetStarted }) => {
   return (
-    <section className="cta-section">
+    <section className="cta-editorial-section">
       <div className="container">
-        <div className="cta-box">
-          <div className="cta-content">
-            <h2 className="cta-title">Ready to Elevate Your Legal Research?</h2>
+        <div className="cta-warm-card">
+          <div className="cta-inner-content">
+            <h2 className="cta-title font-serif">Ready to Elevate Your Legal Research?</h2>
             <p className="cta-description">
               Query statutory provisions, cross-reference new penal codes (BNS, BNSS, BSS), and obtain grounded citations in sub-second latency.
             </p>
             <div className="cta-actions">
-              <button className="btn btn-primary btn-lg" onClick={onGetStarted}>
-                Launch Legal Workspace →
+              <button className="btn btn-white cta-btn" onClick={onGetStarted}>
+                Launch Legal Workspace <span>↗</span>
               </button>
             </div>
           </div>

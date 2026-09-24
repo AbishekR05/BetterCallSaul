@@ -1,147 +1,116 @@
-/* frontend/src/components/landing/Navbar.css */
-
-.navbar {
-  position: fixed;
+.hero-navbar {
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: var(--header-height);
   z-index: 100;
-  transition: background-color var(--transition-smooth), backdrop-filter var(--transition-smooth), border-color var(--transition-smooth);
-  border-bottom: 1px solid transparent;
+  padding: 24px 40px;
 }
 
-.navbar-scrolled {
-  background-color: rgba(13, 15, 18, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom-color: var(--border-subtle);
-}
-
-.navbar-container {
-  height: 100%;
+.hero-navbar-container {
+  max-width: 1320px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.navbar-brand {
+.hero-navbar-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  color: #FFFFFF;
 }
 
-.brand-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, rgba(217, 93, 36, 0.2), rgba(217, 93, 36, 0.05));
-  border: 1px solid rgba(217, 93, 36, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.scale-svg {
+  width: 24px;
+  height: 24px;
+  color: var(--accent-primary);
 }
 
-.brand-scale {
-  color: var(--accent-orange);
-}
-
-.brand-text {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.brand-badge {
-  font-size: 0.7rem;
+.brand-name {
+  font-size: 22px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-  background: var(--accent-orange-light);
-  color: var(--accent-orange);
-  border: 1px solid rgba(217, 93, 36, 0.3);
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
 }
 
-.navbar-status-desktop {
+.hero-navbar-links {
   display: flex;
   align-items: center;
+  gap: 36px;
 }
 
-.navbar-links {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
-
-.navbar-links a {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text-secondary);
+.hero-navbar-links a {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  font-weight: 400;
   transition: color var(--transition-fast);
 }
 
-.navbar-links a:hover {
-  color: var(--text-primary);
+.hero-navbar-links a:hover {
+  color: #FFFFFF;
 }
 
-.navbar-actions {
+.hero-navbar-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 
-.auth-buttons, .user-menu {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.nav-sign-in-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  cursor: pointer;
+  transition: color var(--transition-fast);
 }
 
-.mobile-toggle {
+.nav-sign-in-btn:hover {
+  color: #FFFFFF;
+}
+
+.nav-consult-btn {
+  padding: 10px 22px;
+  font-size: 13.5px;
+  border-radius: var(--radius-pill);
+}
+
+.arrow-icon {
+  font-size: 14px;
+  margin-left: 2px;
+}
+
+.mobile-menu-toggle {
   display: none;
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: #FFFFFF;
+  font-size: 22px;
   cursor: pointer;
 }
 
-/* Mobile Menu Drawer */
-.mobile-menu {
-  position: absolute;
-  top: var(--header-height);
-  left: 0;
-  right: 0;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-subtle);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-}
-
-.mobile-menu a {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-}
-
-.mobile-auth-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.w-full {
-  width: 100%;
-}
-
-@media (max-width: 1023px) {
-  .navbar-links, .navbar-status-desktop {
+@media (max-width: 900px) {
+  .hero-navbar {
+    padding: 16px 20px;
+  }
+  .hero-navbar-links {
     display: none;
   }
-  .mobile-toggle {
+  .hero-navbar-links.active {
+    display: flex;
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    right: 20px;
+    background: #14171D;
+    flex-direction: column;
+    padding: 24px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .mobile-menu-toggle {
     display: block;
   }
 }

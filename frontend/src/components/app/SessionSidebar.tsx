@@ -89,9 +89,11 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
     <aside className="session-sidebar">
       {/* Brand & New Session */}
       <div className="sidebar-header">
-        <div className="sidebar-brand">
-          <span className="brand-logo">⚖️</span>
-          <span className="brand-name">BetterCallSaul</span>
+        <div className="sidebar-brand font-serif">
+          <svg className="sidebar-scale-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+            <path d="M12 3v18M4 7h16M4 7l4 8M12 7l-4 8M12 7l4 8M20 7l-4 8M2 15h8M14 15h8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <span className="brand-name font-serif">BetterCallSaul</span>
         </div>
         <button className="btn btn-primary new-session-btn" onClick={handleCreateNew}>
           + New Research Session
@@ -120,8 +122,6 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
                 className={`session-item ${isActive ? 'active' : ''}`}
                 onClick={() => onSelectSession(sess.id, sess.title)}
               >
-                <span className="session-icon">💬</span>
-
                 {isEditing ? (
                   <form
                     onSubmit={(e) => handleSaveRename(e, sess.id)}
@@ -149,14 +149,14 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
                         title="Rename"
                         onClick={(e) => handleStartEdit(e, sess)}
                       >
-                        ✏️
+                        Rename
                       </button>
                       <button
                         className="item-action-btn"
                         title="Delete"
                         onClick={(e) => handleDelete(e, sess.id)}
                       >
-                        🗑️
+                        Delete
                       </button>
                     </>
                   )}
@@ -170,7 +170,7 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
       {/* User Info & Logout */}
       <div className="sidebar-footer">
         <div className="user-profile">
-          <div className="avatar-circle">
+          <div className="avatar-circle font-serif">
             {user?.username ? user.username[0].toUpperCase() : 'A'}
           </div>
           <div className="user-meta">
@@ -180,7 +180,7 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
         </div>
 
         <button className="logout-btn" onClick={() => logout()} title="Sign Out">
-          🚪 Logout
+          Logout
         </button>
       </div>
     </aside>

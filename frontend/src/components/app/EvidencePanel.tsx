@@ -21,8 +21,11 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
     <aside className="evidence-drawer" aria-label="Statutory Evidence Drawer">
       <div className="drawer-header">
         <div className="drawer-title-group">
-          <span className="drawer-icon">📜</span>
-          <h3 className="drawer-title">Statutory Evidence Corpus</h3>
+          <svg className="drawer-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+          </svg>
+          <h3 className="drawer-title font-serif">Statutory Evidence Corpus</h3>
         </div>
         <button className="drawer-close-btn" onClick={onClose} aria-label="Close evidence panel">
           ✕
@@ -48,7 +51,7 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
                     {cit.section && <span className="section-tag">Sec {cit.section}</span>}
                   </div>
 
-                  <h4 className="citation-title">
+                  <h4 className="citation-title font-serif">
                     {sectionLabel}
                   </h4>
 
@@ -63,7 +66,7 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
       </div>
 
       <div className="drawer-footer">
-        <span>Verified against Ministry of Law & Justice BNS/BNSS/BSS Corpus</span>
+        <span>Verified against Ministry of Law &amp; Justice BNS/BNSS/BSS Corpus</span>
       </div>
     </aside>
   );
