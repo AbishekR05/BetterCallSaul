@@ -1,0 +1,54 @@
+/* frontend/src/styles/variables.css */
+
+:root {
+  /* Color Palette matching reference & spec (§4) */
+  --bg-primary: #0D0F12;
+  --bg-secondary: #14171D;
+  --bg-card: rgba(22, 26, 33, 0.7);
+  --bg-card-hover: rgba(30, 36, 46, 0.85);
+  --bg-light-section: #FAF8F5;
+  
+  --text-primary: #F4F2EC;
+  --text-secondary: #A0A5B1;
+  --text-muted: #6C7280;
+  --text-dark: #121418;
+  --text-dark-muted: #575D6B;
+
+  --accent-orange: #D95D24;
+  --accent-orange-hover: #F0682B;
+  --accent-orange-light: rgba(217, 93, 36, 0.15);
+  --accent-gold: #C99700;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(217, 93, 36, 0.4);
+  --border-light: rgba(0, 0, 0, 0.08);
+
+  --status-success: #10B981;
+  --status-warning: #F59E0B;
+  --status-error: #EF4444;
+  --status-info: #3B82F6;
+
+  /* Typography Fonts */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  /* Glassmorphism & Shadows */
+  --glass-bg: rgba(20, 24, 31, 0.65);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+
+  /* Border Radii */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout Breakpoints */
+  --max-width-content: 1240px;
+  --header-height: 72px;
+}

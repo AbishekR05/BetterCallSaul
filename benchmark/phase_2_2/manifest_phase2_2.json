@@ -1,9 +1,9 @@
 {
   "phase": "2.2",
   "created_at": "2026-09-05T17:37:08Z",
-  "last_updated": "2026-09-21T16:09:59Z",
-  "total_batches": 79,
-  "completed_batches": 78,
+  "last_updated": "2026-09-21T18:32:38Z",
+  "total_batches": 85,
+  "completed_batches": 84,
   "failed_batches": 0,
   "batches": {
     "pilot_sampled_chunks": {
@@ -495,9 +495,45 @@
       "peak_vram_gb": 3.6749067306518555
     },
     "filtered_in_madras_judgments_part_0002.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-21T16:39:09Z",
+      "error_message": "Interrupted run auto-reset",
+      "num_chunks": 250001,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_madras_judgments_part_0001.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-21T17:17:54Z",
+      "num_chunks": 250001,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_manipur_judgments_part_0001.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-21T17:26:32Z",
+      "num_chunks": 63429,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_meghalaya_judgments_part_0001.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-21T17:32:37Z",
+      "num_chunks": 46436,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_orissa_judgments_part_0005.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-21T17:57:53Z",
+      "num_chunks": 188467,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_orissa_judgments_part_0004.parquet": {
+      "status": "loaded",
+      "last_updated": "2026-09-21T18:32:38Z",
+      "num_chunks": 250001,
+      "peak_vram_gb": 3.6749067306518555
+    },
+    "filtered_in_orissa_judgments_part_0003.parquet": {
       "status": "embedding",
-      "last_updated": "2026-09-21T16:09:59Z",
-      "error_message": "Interrupted run auto-reset"
+      "last_updated": "2026-09-21T18:32:38Z"
     }
   }
 }

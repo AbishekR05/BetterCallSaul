@@ -1,0 +1,67 @@
+/* frontend/src/components/landing/Values.css */
+
+.values-section {
+  padding: 100px 0;
+  background-color: var(--bg-primary);
+}
+
+.values-header {
+  max-width: 640px;
+  margin: 0 auto 60px auto;
+  text-align: center;
+}
+
+.values-subtitle {
+  margin-top: 12px;
+  font-size: 1.05rem;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.value-card {
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.value-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: var(--accent-orange-light);
+  border: 1px solid rgba(217, 93, 36, 0.3);
+  color: var(--accent-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.value-title {
+  font-family: var(--font-sans);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.value-desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 1023px) {
+  .values-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 639px) {
+  .values-grid {
+    grid-template-columns: 1fr;
+  }
+}

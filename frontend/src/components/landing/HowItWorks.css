@@ -1,0 +1,117 @@
+.how-it-works-section {
+  padding: 100px 0;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.how-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 70px;
+}
+
+.steps-container {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+
+.steps-line {
+  position: absolute;
+  top: 36px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    rgba(217, 93, 36, 0.2) 0%, 
+    rgba(217, 93, 36, 0.8) 50%, 
+    rgba(217, 93, 36, 0.2) 100%
+  );
+  z-index: 1;
+}
+
+.step-card {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.step-number-container {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: 0 0 20px rgba(217, 93, 36, 0.2);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.step-card:hover .step-number-container {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(217, 93, 36, 0.4);
+}
+
+.step-number {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.step-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 20px 16px;
+  height: 100%;
+}
+
+.step-title {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.step-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+@media (max-width: 1024px) {
+  .steps-container {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .steps-line {
+    display: none;
+  }
+
+  .step-card {
+    flex-direction: row;
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .step-number-container {
+    flex-shrink: 0;
+    margin-bottom: 0;
+    margin-right: 20px;
+    width: 60px;
+    height: 60px;
+  }
+
+  .step-content {
+    flex-grow: 1;
+  }
+}

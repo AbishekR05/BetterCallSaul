@@ -1,0 +1,124 @@
+.plans-section {
+  padding: 100px 0;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.plans-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 60px;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.plan-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition-normal);
+}
+
+.plan-card:hover {
+  transform: translateY(-4px);
+}
+
+.plan-card.featured {
+  border-color: var(--accent-primary);
+  background: linear-gradient(180deg, rgba(217, 93, 36, 0.05) 0%, var(--bg-card) 100%);
+  box-shadow: 0 10px 40px rgba(217, 93, 36, 0.15);
+}
+
+.plan-badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-gradient);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.1em;
+}
+
+.plan-header {
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 24px;
+}
+
+.plan-name {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.plan-price {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.plan-price .amount {
+  font-family: var(--font-heading);
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.plan-price .period {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+
+.plan-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  flex-grow: 1;
+}
+
+.plan-features li {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.plan-features .check {
+  color: var(--accent-primary);
+  font-weight: 700;
+  margin-right: 12px;
+}
+
+.plan-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+}
