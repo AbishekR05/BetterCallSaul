@@ -81,8 +81,12 @@ class GeminiClient:
                 prompt_tokens = len(full_prompt) // 4
                 completion_tokens = len(raw_text) // 4
                 if hasattr(res, 'usage_metadata') and res.usage_metadata:
-                    prompt_tokens = getattr(res.usage_metadata, 'prompt_token_count', prompt_tokens)
-                    completion_tokens = getattr(res.usage_metadata, 'candidates_token_count', completion_tokens)
+                    p_cnt = getattr(res.usage_metadata, 'prompt_token_count', None)
+                    if p_cnt is not None:
+                        prompt_tokens = p_cnt
+                    c_cnt = getattr(res.usage_metadata, 'candidates_token_count', None)
+                    if c_cnt is not None:
+                        completion_tokens = c_cnt
 
                 return LLMResponse(
                     raw_text=raw_text,
