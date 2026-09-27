@@ -67,7 +67,8 @@ class GeminiClient:
                 from google.genai import types
                 config = types.GenerateContentConfig(
                     temperature=temperature,
-                    max_output_tokens=max_tokens
+                    max_output_tokens=max_tokens,
+                    response_mime_type="application/json"
                 )
                 res = self.client.models.generate_content(
                     model=self.model_name,
@@ -106,7 +107,8 @@ class GeminiClient:
             }],
             "generationConfig": {
                 "temperature": temperature,
-                "maxOutputTokens": max_tokens
+                "maxOutputTokens": max_tokens,
+                "responseMimeType": "application/json"
             }
         }
 

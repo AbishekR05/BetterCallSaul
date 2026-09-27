@@ -20,7 +20,17 @@ class ResponseParser:
     def clean_json_text(raw_text: str) -> str:
         """Strips markdown code fences and extraneous whitespace from LLM text."""
         cleaned = raw_text.strip()
-        # Remove ```json ... ``` or ``` ... ``` wrappers if present
+        # 1. Look for ```json ... ``` or ``` ... ``` blocks
+        fence_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", cleaned, re.DOTALL)
+        if fence_match:
+            return fence_match.group(1).strip()
+            
+        # 2. Look for outermost { ... } JSON object
+        brace_match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+        if brace_match:
+            return brace_match.group(0).strip()
+
+        # 3. Strip simple leading/trailing ```
         if cleaned.startswith("```"):
             cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
             cleaned = re.sub(r"\s*```$", "", cleaned)
@@ -43,15 +53,19 @@ class ResponseParser:
             data = json.loads(cleaned_text)
             parsed_model = RawAnswerModel(**data)
         except Exception as e:
-            # Parse failure — return fallback model with flag
+            # Parse failure — extract clean display text if present, otherwise fallback
             safety_flags.append("generation_parse_failure")
+            clean_display = re.sub(r"```(?:json)?", "", raw_text).replace("```", "").strip()
+            detail_text = clean_display if clean_display else "Generation output could not be parsed into valid JSON structure."
+            summary_text = (clean_display[:200] + "...") if len(clean_display) > 200 else (clean_display or "Unable to parse structured answer response.")
+            
             fallback_model = RawAnswerModel(
-                answer_summary="Unable to parse structured answer response.",
-                answer_detail="Generation output could not be parsed into valid JSON structure.",
-                applicable_jurisdiction="unclear",
+                answer_summary=summary_text,
+                answer_detail=detail_text,
+                applicable_jurisdiction="central",
                 evidence_sufficiency="insufficient",
                 citations_used=[],
-                caveats=["Generation parse failure encountered. Consult raw logs."],
+                caveats=[],
                 clarifying_question=None
             )
             return fallback_model, safety_flags
