@@ -50,15 +50,38 @@ class ResponseParser:
 
         # 1. Parse JSON
         try:
-            data = json.loads(cleaned_text)
+            data = json.loads(cleaned_text, strict=False)
             parsed_model = RawAnswerModel(**data)
-        except Exception as e:
-            # Parse failure — extract clean display text if present, otherwise fallback
+        except Exception:
+            # 2. Try regex extraction of answer_detail & answer_summary if raw_text is JSON-like
+            try:
+                detail_match = re.search(r'"answer_detail"\s*:\s*"(.*?)"\s*,\s*"', raw_text, re.DOTALL)
+                summary_match = re.search(r'"answer_summary"\s*:\s*"(.*?)"\s*,\s*"', raw_text, re.DOTALL)
+                if detail_match:
+                    detail_text = detail_match.group(1).replace('\\n', '\n').replace('\\"', '"')
+                    summary_text = summary_match.group(1).replace('\\n', '\n').replace('\\"', '"') if summary_match else detail_text[:200]
+                    return RawAnswerModel(
+                        answer_summary=summary_text,
+                        answer_detail=detail_text,
+                        applicable_jurisdiction="central",
+                        evidence_sufficiency="insufficient",
+                        citations_used=[],
+                        caveats=[],
+                        clarifying_question=None
+                    ), safety_flags
+            except Exception:
+                pass
+
+            # 3. Fallback for unparseable raw text
             safety_flags.append("generation_parse_failure")
             clean_display = re.sub(r"```(?:json)?", "", raw_text).replace("```", "").strip()
-            detail_text = clean_display if clean_display else "Generation output could not be parsed into valid JSON structure."
-            summary_text = (clean_display[:200] + "...") if len(clean_display) > 200 else (clean_display or "Unable to parse structured answer response.")
-            
+            if clean_display.startswith("{") and clean_display.endswith("}"):
+                detail_text = "The provided legal evidence does not contain sufficient information to answer your query."
+                summary_text = detail_text
+            else:
+                detail_text = clean_display if clean_display else "Generation output could not be parsed into valid JSON structure."
+                summary_text = (clean_display[:200] + "...") if len(clean_display) > 200 else (clean_display or "Unable to parse structured answer response.")
+
             fallback_model = RawAnswerModel(
                 answer_summary=summary_text,
                 answer_detail=detail_text,
