@@ -1,0 +1,61 @@
+# configs/p33_retrieval_planning.yaml
+# Phase 3.3 Intent-Aware Retrieval Planning Configuration
+
+min_confidence_threshold: 0.40
+fallback_intent: "mixed"
+
+intent_mappings:
+  statutory_information:
+    source_mix:
+      legislation: 0.80
+      judgment: 0.20
+    top_k_hints:
+      candidate_k: 50
+      rerank_k: 15
+    requires_clarification: false
+
+  case_law:
+    source_mix:
+      legislation: 0.20
+      judgment: 0.80
+    top_k_hints:
+      candidate_k: 50
+      rerank_k: 15
+    requires_clarification: false
+
+  legal_interpretation:
+    source_mix:
+      legislation: 0.50
+      judgment: 0.50
+    top_k_hints:
+      candidate_k: 50
+      rerank_k: 15
+    requires_clarification: false
+
+  procedure:
+    source_mix:
+      legislation: 0.60
+      judgment: 0.40
+    top_k_hints:
+      candidate_k: 50
+      rerank_k: 15
+    requires_clarification: false
+
+  mixed:
+    source_mix:
+      legislation: 0.50
+      judgment: 0.50
+    top_k_hints:
+      candidate_k: 50
+      rerank_k: 15
+    requires_clarification: false
+
+  clarification_required:
+    source_mix:
+      legislation: 0.0
+      judgment: 0.0
+    top_k_hints:
+      candidate_k: 0
+      rerank_k: 0
+    requires_clarification: true
+    clarification_prompt: "Your legal question is broad or underspecified. Could you clarify whether you are looking for statutory penalties, court judgments, or filing procedures?"

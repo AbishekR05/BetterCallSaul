@@ -4,6 +4,7 @@ Section 22 Required Functional Test Cases for Phase 2.3 Legal Retriever.
 Validates all 8 required retrieval behavioral cases against the database.
 """
 
+import pytest
 from src.retrieval.config import RetrievalConfig, RetrievalFilters
 from src.retrieval.retriever import LegalRetriever
 

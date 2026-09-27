@@ -1,0 +1,287 @@
+{
+  "total_queries": 20,
+  "correct_intents": 20,
+  "accuracy_pct": 100.0,
+  "results": [
+    {
+      "query_id": "p33-statutory-001",
+      "query_text": "What is the penalty for murder?",
+      "expected_intent": "statutory_information",
+      "predicted_intent": "statutory_information",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Criminal Law",
+      "source_mix": {
+        "legislation": 0.8,
+        "judgment": 0.2
+      },
+      "latency_ms": 0.22
+    },
+    {
+      "query_id": "p33-statutory-002",
+      "query_text": "What is the punishment for murder under BNS Section 103?",
+      "expected_intent": "statutory_information",
+      "predicted_intent": "statutory_information",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Criminal Law",
+      "source_mix": {
+        "legislation": 0.8,
+        "judgment": 0.2
+      },
+      "latency_ms": 0.04
+    },
+    {
+      "query_id": "p33-statutory-003",
+      "query_text": "What are the rules and statutory limits for maternity leave under Indian law?",
+      "expected_intent": "statutory_information",
+      "predicted_intent": "statutory_information",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Employment & Labour",
+      "source_mix": {
+        "legislation": 0.8,
+        "judgment": 0.2
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-statutory-004",
+      "query_text": "What is the fine for driving without a valid license under Motor Vehicles Act?",
+      "expected_intent": "statutory_information",
+      "predicted_intent": "statutory_information",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Employment & Labour",
+      "source_mix": {
+        "legislation": 0.8,
+        "judgment": 0.2
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-statutory-005",
+      "query_text": "What are the mandatory warranty provisions under Consumer Protection Act?",
+      "expected_intent": "statutory_information",
+      "predicted_intent": "statutory_information",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Consumer Protection",
+      "source_mix": {
+        "legislation": 0.8,
+        "judgment": 0.2
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-caselaw-001",
+      "query_text": "Why did the Supreme Court reject this type of murder conviction?",
+      "expected_intent": "case_law",
+      "predicted_intent": "case_law",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Criminal Law",
+      "source_mix": {
+        "legislation": 0.2,
+        "judgment": 0.8
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-caselaw-002",
+      "query_text": "What has the Supreme Court decided regarding instant triple talaq validity?",
+      "expected_intent": "case_law",
+      "predicted_intent": "case_law",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Employment & Labour",
+      "source_mix": {
+        "legislation": 0.2,
+        "judgment": 0.8
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-caselaw-003",
+      "query_text": "Which landmark judgment established the right to privacy as a fundamental right?",
+      "expected_intent": "case_law",
+      "predicted_intent": "case_law",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Employment & Labour",
+      "source_mix": {
+        "legislation": 0.2,
+        "judgment": 0.8
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-caselaw-004",
+      "query_text": "Has High Court allowed medical termination of pregnancy beyond 24 weeks?",
+      "expected_intent": "case_law",
+      "predicted_intent": "case_law",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Employment & Labour",
+      "source_mix": {
+        "legislation": 0.2,
+        "judgment": 0.8
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-interpretation-001",
+      "query_text": "Can my employer fire me while I'm pregnant?",
+      "expected_intent": "legal_interpretation",
+      "predicted_intent": "legal_interpretation",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Employment & Labour",
+      "source_mix": {
+        "legislation": 0.5,
+        "judgment": 0.5
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-interpretation-002",
+      "query_text": "If I took my friend's bike without asking but brought it back safely, is that theft?",
+      "expected_intent": "legal_interpretation",
+      "predicted_intent": "legal_interpretation",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Employment & Labour",
+      "source_mix": {
+        "legislation": 0.5,
+        "judgment": 0.5
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-interpretation-003",
+      "query_text": "Does an unwritten WhatsApp agreement count as a binding contract in court?",
+      "expected_intent": "legal_interpretation",
+      "predicted_intent": "legal_interpretation",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Employment & Labour",
+      "source_mix": {
+        "legislation": 0.5,
+        "judgment": 0.5
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-procedure-001",
+      "query_text": "How do I file a consumer complaint against a builder for delay in flat possession?",
+      "expected_intent": "procedure",
+      "predicted_intent": "procedure",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Consumer Protection",
+      "source_mix": {
+        "legislation": 0.6,
+        "judgment": 0.4
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-procedure-002",
+      "query_text": "What are the exact steps to apply for anticipatory bail in High Court?",
+      "expected_intent": "procedure",
+      "predicted_intent": "procedure",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Criminal Law",
+      "source_mix": {
+        "legislation": 0.6,
+        "judgment": 0.4
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-procedure-003",
+      "query_text": "How to register an RTI application online for municipal corporation records?",
+      "expected_intent": "procedure",
+      "predicted_intent": "procedure",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Employment & Labour",
+      "source_mix": {
+        "legislation": 0.6,
+        "judgment": 0.4
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-mixed-001",
+      "query_text": "My landlord won't return my deposit. What can I do?",
+      "expected_intent": "mixed",
+      "predicted_intent": "mixed",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Employment & Labour",
+      "source_mix": {
+        "legislation": 0.5,
+        "judgment": 0.5
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-mixed-002",
+      "query_text": "My ex-partner is threatening to release private photos online, what are my legal remedies?",
+      "expected_intent": "mixed",
+      "predicted_intent": "mixed",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Employment & Labour",
+      "source_mix": {
+        "legislation": 0.5,
+        "judgment": 0.5
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-clarification-001",
+      "query_text": "Which law applies to me?",
+      "expected_intent": "clarification_required",
+      "predicted_intent": "clarification_required",
+      "correct": true,
+      "confidence": 0.95,
+      "domain_hint": "Employment & Labour",
+      "source_mix": {
+        "legislation": 0.0,
+        "judgment": 0.0
+      },
+      "latency_ms": 0.02
+    },
+    {
+      "query_id": "p33-clarification-002",
+      "query_text": "Can I sue?",
+      "expected_intent": "clarification_required",
+      "predicted_intent": "clarification_required",
+      "correct": true,
+      "confidence": 0.9,
+      "domain_hint": null,
+      "source_mix": {
+        "legislation": 0.0,
+        "judgment": 0.0
+      },
+      "latency_ms": 0.01
+    },
+    {
+      "query_id": "p33-clarification-003",
+      "query_text": "Penalty?",
+      "expected_intent": "clarification_required",
+      "predicted_intent": "clarification_required",
+      "correct": true,
+      "confidence": 0.9,
+      "domain_hint": null,
+      "source_mix": {
+        "legislation": 0.0,
+        "judgment": 0.0
+      },
+      "latency_ms": 0.0
+    }
+  ]
+}

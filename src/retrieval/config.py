@@ -53,7 +53,7 @@ class RetrievalConfig(BaseModel):
     # Preprocessing & Hardware Settings
     max_query_length: int = Field(default=1000, description="Max allowed character length for incoming query")
     use_gpu: bool = Field(default=True, description="Run BGE query embedding on CUDA GPU if available (fallback to CPU)")
-    db_timeout_seconds: float = Field(default=10.0, description="Max wall-clock timeout for database query execution")
+    db_timeout_seconds: float = Field(default=30.0, description="Max wall-clock timeout for database query execution")
     
     # Deduplication policy
     dedup_policy: str = Field(default="exact_and_near", description="'exact_only' or 'exact_and_near'")

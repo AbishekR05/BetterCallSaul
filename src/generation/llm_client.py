@@ -184,7 +184,31 @@ class MockLLMClient:
     ) -> LLMResponse:
         start_time = time.time()
 
-        if self.canned_response_mode == "sufficient":
+        if "statutory_information" in system_prompt or "intent" in system_prompt.lower():
+            prompt_lower = user_prompt.lower()
+            if any(k in prompt_lower for k in ["penalty for murder", "punishment for murder", "rules and statutory", "fine for driving", "mandatory warranty"]):
+                intent = "statutory_information"
+            elif any(k in prompt_lower for k in ["why did the supreme court", "decided regarding instant", "landmark judgment", "allowed medical termination"]):
+                intent = "case_law"
+            elif any(k in prompt_lower for k in ["fire me while i'm pregnant", "theft", "binding contract"]):
+                intent = "legal_interpretation"
+            elif any(k in prompt_lower for k in ["file a consumer complaint", "anticipatory bail", "rti application"]):
+                intent = "procedure"
+            elif any(k in prompt_lower for k in ["landlord won't return", "threatening to release"]):
+                intent = "mixed"
+            elif any(k in prompt_lower for k in ["which law applies", "can i sue", "penalty?"]):
+                intent = "clarification_required"
+            else:
+                intent = "mixed"
+
+            mock_json = {
+                "intent": intent,
+                "domain_hint": "Consumer Protection" if "consumer" in prompt_lower else ("Criminal Law" if "murder" in prompt_lower or "bail" in prompt_lower else "Employment & Labour"),
+                "jurisdiction_hint": "central_only",
+                "confidence": 0.95,
+                "reasoning": f"Deterministic mock classification for intent: {intent}"
+            }
+        elif self.canned_response_mode == "sufficient":
             prompt_lower = user_prompt.lower()
             if any(k in prompt_lower for k in ["murder", "103", "homicide", "kill", "death"]):
                 mock_json = {
