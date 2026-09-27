@@ -29,8 +29,12 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
         title: `Legal Session ${idx + 1} (${s.session_id.substring(0, 6)})`
       }));
       setSessions(mapped);
-      if (mapped.length > 0 && !activeSessionId) {
-        onSelectSession(mapped[0].id, mapped[0].title);
+      if (mapped.length > 0) {
+        if (!activeSessionId || !mapped.some(s => s.id === activeSessionId)) {
+          onSelectSession(mapped[0].id, mapped[0].title);
+        }
+      } else {
+        await handleCreateNew();
       }
     } catch (err) {
       console.error('Failed to load sessions:', err);

@@ -32,6 +32,10 @@ export const ErrorStateBanner: React.FC<ErrorStateBannerProps> = ({ error, onRet
         title = 'Upstream Timeout (504)';
         message = 'Statutory search timed out while scanning vector corpus. Please refine your query keywords.';
         break;
+      case 404:
+        title = 'Session Expired or Not Found (404)';
+        message = 'This workspace session does not exist on the server. Please click "+ New Session" in the sidebar to start a fresh chat.';
+        break;
       case 409:
         title = 'Session Busy (409)';
         message = 'Another statutory query is active in this session. Please wait for completion.';
