@@ -34,6 +34,9 @@ class FollowUpClassifier:
         "consumer court", "defective product",
         "cheque bounce", "section 138",
         "bail", "anticipatory bail", "fir",
+        "murder", "homicide", "culpable homicide", "punishment",
+        "theft", "extortion", "robbery", "dacoity", "assault",
+        "bns", "bnss", "bss", "ipc", "crpc", "iea", "evidence"
     ]
 
     CONTRADICTION_PATTERNS = [
@@ -57,7 +60,6 @@ class FollowUpClassifier:
         # Check for ambiguous references
         for pattern in self.AMBIGUOUS_PATTERNS:
             if re.search(pattern, query_lower):
-                # If there are multiple prior turns with distinct concepts, mark ambiguous
                 if len(recent_turns) >= 2:
                     return "ambiguous_followup"
 
@@ -74,20 +76,14 @@ class FollowUpClassifier:
         is_short_followup = len(query_lower.split()) <= 6 and ("about" in query_lower or query_lower.startswith("what if") or query_lower.startswith("and "))
 
         if has_pronoun or has_elliptical or is_short_followup:
-            # Check if it also introduces a complete topic change
             if self._is_topic_change(query_lower, recent_turns):
                 return "topic_change"
             return "simple_followup"
 
-        # Check topic change for longer queries
-        if self._is_topic_change(query_lower, recent_turns):
-            return "topic_change"
-
-        # If query has substantial self-contained legal subject and no pronouns/elliptical references, treat as standalone
-        if len(query_lower.split()) >= 6 and not has_pronoun:
+        # If query has no pronouns and presents a distinct subject, classify as standalone
+        if self._is_topic_change(query_lower, recent_turns) or not has_pronoun:
             return "standalone"
 
-        # Default fallback for short context-dependent queries
         return "simple_followup"
 
     def _is_topic_change(self, query_lower: str, recent_turns: List[ConversationTurn]) -> bool:
