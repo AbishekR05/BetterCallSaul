@@ -44,6 +44,7 @@ def init_app_dependencies(
     _GLOBAL_SESSION_STORE = session_store or PersistentSessionStore(backend="sqlite", sqlite_path="benchmark/phase_3_0/api_session_db.sqlite")
     _GLOBAL_AUTH_PROVIDER = auth_provider or PasswordAuthProvider(backend="sqlite", sqlite_path="benchmark/phase_3_0/api_session_db.sqlite")
 
+    _GLOBAL_AUTHORIZATION_SERVICE = authorization_service or AuthorizationService(session_store=_GLOBAL_SESSION_STORE)
     _GLOBAL_ORCHESTRATOR = orchestrator or ConversationalOrchestrator(
         session_store=_GLOBAL_SESSION_STORE,
         retriever_adapter=IntentAwareRetrieverAdapter()
