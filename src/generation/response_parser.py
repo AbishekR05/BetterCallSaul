@@ -52,6 +52,16 @@ class ResponseParser:
         try:
             data = json.loads(cleaned_text, strict=False)
             parsed_model = RawAnswerModel(**data)
+            # Ensure answer_detail is clean text and not a raw nested JSON string
+            if parsed_model.answer_detail and parsed_model.answer_detail.strip().startswith("{"):
+                try:
+                    inner_data = json.loads(parsed_model.answer_detail.strip(), strict=False)
+                    if isinstance(inner_data, dict):
+                        parsed_model.answer_detail = inner_data.get("answer_detail") or inner_data.get("answer_summary") or parsed_model.answer_summary
+                        if not parsed_model.answer_summary and inner_data.get("answer_summary"):
+                            parsed_model.answer_summary = inner_data.get("answer_summary")
+                except Exception:
+                    pass
         except Exception:
             # 2. Try regex extraction of answer_detail & answer_summary if raw_text is JSON-like
             try:

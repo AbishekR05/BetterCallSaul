@@ -61,13 +61,24 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
     setError(null);
     sessionsApi.getSession(sessionId).then((data) => {
       if (data.turns && data.turns.length > 0) {
-        const loadedMsgs: DisplayTurn[] = data.turns.map((t) => ({
-          turn_id: t.turn_id,
-          user_message: t.user_query,
-          assistant_message: t.answer_detail,
-          citations: t.citations || [],
-          timestamp: t.timestamp_utc
-        }));
+        const loadedMsgs: DisplayTurn[] = data.turns.map((t) => {
+          let text = t.answer_detail || '';
+          if (text.trim().startsWith('{')) {
+            try {
+              const parsed = JSON.parse(text);
+              text = parsed.answer_detail || parsed.answer_summary || text;
+            } catch {
+              // Keep original if parse fails
+            }
+          }
+          return {
+            turn_id: t.turn_id,
+            user_message: t.user_query,
+            assistant_message: text,
+            citations: t.citations || [],
+            timestamp: t.timestamp_utc
+          };
+        });
         setMessages(loadedMsgs);
         // Set latest citations into evidence panel state if present
         const lastWithCites = loadedMsgs.slice().reverse().find(m => m.citations && m.citations.length > 0);
@@ -119,10 +130,20 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
       clearTimeout(stepTimer2);
       clearTimeout(stepTimer3);
 
+      let assistantText = res.answer_detail || res.answer_summary || '';
+      if (assistantText.trim().startsWith('{')) {
+        try {
+          const parsed = JSON.parse(assistantText);
+          assistantText = parsed.answer_detail || parsed.answer_summary || assistantText;
+        } catch {
+          // Keep raw text if parsing fails
+        }
+      }
+
       const completedTurn: DisplayTurn = {
         turn_id: `${sessionId}-${res.turn_index}`,
         user_message: textToSubmit,
-        assistant_message: res.answer_detail || res.answer_summary,
+        assistant_message: assistantText,
         citations: res.citations || [],
         latency_ms: elapsed,
         timestamp: new Date().toISOString()
