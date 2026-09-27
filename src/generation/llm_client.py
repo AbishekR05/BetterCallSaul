@@ -174,15 +174,47 @@ class MockLLMClient:
         start_time = time.time()
 
         if self.canned_response_mode == "sufficient":
-            mock_json = {
-                "answer_summary": "Under central legal provisions, the action is defined and governed by applicable statutory guidelines.",
-                "answer_detail": "According to statutory authorities [E1], specific procedural compliance is required. Legal provisions [E2] outline the penalties for non-compliance.",
-                "applicable_jurisdiction": "central",
-                "evidence_sufficiency": "sufficient",
-                "citations_used": ["E1", "E2"],
-                "caveats": ["This output is for legal awareness purposes only and does not constitute formal legal advice."],
-                "clarifying_question": None
-            }
+            prompt_lower = user_prompt.lower()
+            if any(k in prompt_lower for k in ["murder", "103", "homicide", "kill", "death"]):
+                mock_json = {
+                    "answer_summary": "Under Bharatiya Nyaya Sanhita (BNS Section 103), murder is punishable by death or imprisonment for life and fine.",
+                    "answer_detail": "According to Bharatiya Nyaya Sanhita (BNS Section 103) [E1], whoever commits murder shall be punished with death or imprisonment for life, and shall also be liable to fine [E2].",
+                    "applicable_jurisdiction": "central",
+                    "evidence_sufficiency": "sufficient",
+                    "citations_used": ["E1", "E2"],
+                    "caveats": ["This output is for legal awareness purposes only and does not constitute formal legal advice."],
+                    "clarifying_question": None
+                }
+            elif any(k in prompt_lower for k in ["firework", "factory", "explosive"]):
+                mock_json = {
+                    "answer_summary": "The provided legal evidence does not contain specific licensing procedures for establishing a fireworks industry.",
+                    "answer_detail": "Based on the retrieved statutory corpus, there are no provisions governing fireworks factory licenses under the Explosives Act. Please consult local state factory rules.",
+                    "applicable_jurisdiction": "unclear",
+                    "evidence_sufficiency": "insufficient",
+                    "citations_used": [],
+                    "caveats": ["Insufficient evidence available in corpus. Consult a legal professional."],
+                    "clarifying_question": None
+                }
+            elif any(k in prompt_lower for k in ["bail", "482", "438", "arrest"]):
+                mock_json = {
+                    "answer_summary": "Anticipatory bail under BNSS Section 482 provides protection from arrest upon direction of the High Court or Sessions Court.",
+                    "answer_detail": "Under Bharatiya Nagarik Suraksha Sanhita (BNSS Section 482) [E1], any person who has reason to believe they may be arrested on accusation of committing a non-bailable offence may apply to the High Court or Court of Session for direction that in event of arrest, they shall be released on bail [E2].",
+                    "applicable_jurisdiction": "central",
+                    "evidence_sufficiency": "sufficient",
+                    "citations_used": ["E1", "E2"],
+                    "caveats": ["Bail conditions are determined at the discretion of the court."],
+                    "clarifying_question": None
+                }
+            else:
+                mock_json = {
+                    "answer_summary": "Under central legal provisions, the action is defined and governed by applicable statutory guidelines.",
+                    "answer_detail": "According to statutory authorities [E1], specific procedural compliance is required. Legal provisions [E2] outline the penalties for non-compliance.",
+                    "applicable_jurisdiction": "central",
+                    "evidence_sufficiency": "sufficient",
+                    "citations_used": ["E1", "E2"],
+                    "caveats": ["This output is for legal awareness purposes only and does not constitute formal legal advice."],
+                    "clarifying_question": None
+                }
         elif self.canned_response_mode == "insufficient":
             mock_json = {
                 "answer_summary": "Insufficient legal evidence retrieved to provide a definitive legal answer.",
