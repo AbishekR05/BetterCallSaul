@@ -28,6 +28,7 @@ from src.generation.llm_client import LLMClient, GeminiClient, MockLLMClient
 from src.generation.pipeline import generate_answer
 from src.generation.schemas import GroundedAnswer, GenerationMetadata
 from src.retrieval.adapters import JurisdictionBoostedAdapter
+from src.planning.retrieval_plan_executor import IntentAwareRetrieverAdapter
 
 
 class ConversationalOrchestrator:
@@ -79,8 +80,8 @@ class ConversationalOrchestrator:
         prompt_version = rewriter_cfg.get("rewrite_prompt_version", "p27_v1")
         self.query_rewriter = QueryRewriter(llm_client=self.llm_client, prompt_version=prompt_version)
 
-        # Wire frozen Phase 2.5 retriever adapter
-        self.retriever_adapter = retriever_adapter or JurisdictionBoostedAdapter()
+        # Wire Phase 3.3 Intent-Aware retriever adapter
+        self.retriever_adapter = retriever_adapter or IntentAwareRetrieverAdapter()
 
     def _load_config(self) -> Dict[str, Any]:
         if self.config_path.exists():

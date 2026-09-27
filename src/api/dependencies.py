@@ -21,6 +21,7 @@ from src.conversation.persistent_session_store import PersistentSessionStore
 from src.conversation.session_store_factory import create_session_store
 
 from src.conversation.orchestrator import ConversationalOrchestrator
+from src.planning.retrieval_plan_executor import IntentAwareRetrieverAdapter
 from src.api.config import get_api_settings, APISettings
 from src.api.hardening.rate_limiter import get_rate_limiter, RateLimiter
 from src.api.errors import RateLimitedError, DependencyUnavailableError
@@ -43,8 +44,10 @@ def init_app_dependencies(
     _GLOBAL_SESSION_STORE = session_store or PersistentSessionStore(backend="sqlite", sqlite_path="benchmark/phase_3_0/api_session_db.sqlite")
     _GLOBAL_AUTH_PROVIDER = auth_provider or PasswordAuthProvider(backend="sqlite", sqlite_path="benchmark/phase_3_0/api_session_db.sqlite")
 
-    _GLOBAL_AUTHORIZATION_SERVICE = authorization_service or AuthorizationService(session_store=_GLOBAL_SESSION_STORE)
-    _GLOBAL_ORCHESTRATOR = orchestrator or ConversationalOrchestrator(session_store=_GLOBAL_SESSION_STORE)
+    _GLOBAL_ORCHESTRATOR = orchestrator or ConversationalOrchestrator(
+        session_store=_GLOBAL_SESSION_STORE,
+        retriever_adapter=IntentAwareRetrieverAdapter()
+    )
     
     # Reset rate limiter state for isolated test execution
     try:
