@@ -33,7 +33,7 @@ class APISettings:
 
         # Timeouts (seconds)
         self.request_timeout_s: float = 30.0
-        self.turn_timeout_s: float = 60.0
+        self.turn_timeout_s: float = 120.0
         self.queue_wait_timeout_s: float = 10.0
 
         # Field & payload limits

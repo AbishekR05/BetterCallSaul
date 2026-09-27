@@ -8,7 +8,7 @@ docs_enabled: false   # Controls /docs, /redoc, /openapi.json in production
 # Timeout boundaries (seconds)
 timeouts:
   request_timeout_s: 30.0
-  turn_timeout_s: 60.0       # Must respect upstream RAG retrieval P95 (~13s) with safety headroom
+  turn_timeout_s: 120.0      # Must respect upstream RAG retrieval & LLM generation headroom
   queue_wait_timeout_s: 10.0 # Waiting time for turn concurrency capacity
 
 # Payload and request field validation limits

@@ -141,7 +141,7 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
       clearTimeout(stepTimer3);
 
       setError(err);
-      setMessages((prev) => prev.filter((msg) => msg.turn_id !== tempTurnId));
+      // Keep tempUserMsg in messages list so user query remains visible alongside error banner
     } finally {
       setIsProcessing(false);
     }
@@ -243,7 +243,15 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({ sessionId, session
 
               <ErrorStateBanner
                 error={error}
-                onRetry={() => handleSubmit()}
+                onRetry={() => {
+                  const lastUserMsg = messages.slice().reverse().find((m) => m.user_message);
+                  if (lastUserMsg) {
+                    setMessages((prev) => prev.filter((m) => m.turn_id !== lastUserMsg.turn_id));
+                    handleSubmit(lastUserMsg.user_message);
+                  } else {
+                    handleSubmit();
+                  }
+                }}
                 onDismiss={() => setError(null)}
               />
 
