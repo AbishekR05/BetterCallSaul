@@ -61,44 +61,55 @@ class GeminiClient:
 
         full_prompt = f"{system_prompt}\n\n{user_prompt}"
 
-        # 1. Try google-genai SDK if initialized
+        # 1. Try google-genai SDK with fallback models if 503/UNAVAILABLE encountered
+        models_to_try = [self.model_name]
+        for fallback_m in ["gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.5-flash"]:
+            if fallback_m not in models_to_try:
+                models_to_try.append(fallback_m)
+
         if self.client:
-            try:
-                from google.genai import types
-                config = types.GenerateContentConfig(
-                    temperature=temperature,
-                    max_output_tokens=max_tokens,
-                    response_mime_type="application/json"
-                )
-                res = self.client.models.generate_content(
-                    model=self.model_name,
-                    contents=full_prompt,
-                    config=config
-                )
-                elapsed_ms = (time.time() - start_time) * 1000.0
+            for target_model in models_to_try:
+                try:
+                    from google.genai import types
+                    config = types.GenerateContentConfig(
+                        temperature=temperature,
+                        max_output_tokens=max_tokens,
+                        response_mime_type="application/json"
+                    )
+                    res = self.client.models.generate_content(
+                        model=target_model,
+                        contents=full_prompt,
+                        config=config
+                    )
+                    elapsed_ms = (time.time() - start_time) * 1000.0
 
-                raw_text = res.text or ""
-                prompt_tokens = len(full_prompt) // 4
-                completion_tokens = len(raw_text) // 4
-                if hasattr(res, 'usage_metadata') and res.usage_metadata:
-                    p_cnt = getattr(res.usage_metadata, 'prompt_token_count', None)
-                    if p_cnt is not None:
-                        prompt_tokens = p_cnt
-                    c_cnt = getattr(res.usage_metadata, 'candidates_token_count', None)
-                    if c_cnt is not None:
-                        completion_tokens = c_cnt
+                    raw_text = res.text or ""
+                    prompt_tokens = len(full_prompt) // 4
+                    completion_tokens = len(raw_text) // 4
+                    if hasattr(res, 'usage_metadata') and res.usage_metadata:
+                        p_cnt = getattr(res.usage_metadata, 'prompt_token_count', None)
+                        if p_cnt is not None:
+                            prompt_tokens = p_cnt
+                        c_cnt = getattr(res.usage_metadata, 'candidates_token_count', None)
+                        if c_cnt is not None:
+                            completion_tokens = c_cnt
 
-                return LLMResponse(
-                    raw_text=raw_text,
-                    prompt_tokens=prompt_tokens,
-                    completion_tokens=completion_tokens,
-                    latency_ms=elapsed_ms,
-                    model_name=self.model_name,
-                    model_version="3.5",
-                    finish_reason="STOP"
-                )
-            except Exception as sdk_err:
-                print(f"[GeminiClient SDK Warning] {sdk_err}. Falling back to REST API...")
+                    return LLMResponse(
+                        raw_text=raw_text,
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=completion_tokens,
+                        latency_ms=elapsed_ms,
+                        model_name=target_model,
+                        model_version="3.6",
+                        finish_reason="STOP"
+                    )
+                except Exception as sdk_err:
+                    err_str = str(sdk_err)
+                    if "503" in err_str or "UNAVAILABLE" in err_str:
+                        print(f"[GeminiClient SDK Notice] Model '{target_model}' hit 503. Trying next fallback model...")
+                        continue
+                    print(f"[GeminiClient SDK Warning] {sdk_err}. Falling back to REST API...")
+                    break
 
         # 2. REST Endpoint Fallback with retry on transient 503/429 errors
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
