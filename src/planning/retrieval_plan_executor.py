@@ -97,10 +97,9 @@ class RetrievalPlanExecutor:
             # Post-filter assertion to guarantee no out-of-constraint chunks enter final candidate list
             filtered_chunks = []
             for chunk in chunks:
-                m = getattr(chunk, "metadata", {}) or {}
                 prov = getattr(chunk, "provenance", {}) or {}
-                chunk_court = m.get("court") or prov.get("court")
-                chunk_st = m.get("doc_type") or prov.get("source_type") or getattr(chunk, "source_type", None)
+                chunk_court = prov.get("court")
+                chunk_st = prov.get("source_type") or getattr(chunk, "source_type", None)
 
                 valid = True
                 if hc.court and len(hc.court) > 0:
@@ -224,7 +223,7 @@ class IntentAwareRetrieverAdapter:
 
         latency_ms = (time.time() - start_time) * 1000.0
 
-        hc_dict = plan.hard_constraints.dict() if plan.hard_constraints else None
+        hc_dict = plan.hard_constraints.model_dump() if plan.hard_constraints else None
         hc_spans = plan.hard_constraints.evidence_spans if plan.hard_constraints else None
         hc_outcome = "success" if chunks else ("insufficiency" if self.last_insufficiency else "empty")
 

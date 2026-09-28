@@ -87,7 +87,8 @@ def test_failing_query_enforces_supreme_court_without_high_court_substitutes():
     
     # Must NOT substitute High Court chunks!
     for chunk in chunks:
-        court = chunk.metadata.get("court")
+        prov = getattr(chunk, "provenance", {}) or {}
+        court = prov.get("court")
         assert court == "Supreme Court of India", f"Disallowed non-Supreme Court chunk returned: {court}"
     
     # Check trace and insufficiency outcome
@@ -105,7 +106,7 @@ def test_explicit_legislation_constraint_no_judgments():
     
     for chunk in chunks:
         prov = getattr(chunk, "provenance", {}) or {}
-        stype = chunk.metadata.get("doc_type") or prov.get("source_type") or getattr(chunk, "source_type", None)
+        stype = prov.get("source_type") or getattr(chunk, "source_type", None)
         if stype:
             assert stype.lower() == "legislation", f"Disallowed judgment chunk returned: {stype}"
 
