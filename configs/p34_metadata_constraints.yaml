@@ -1,0 +1,73 @@
+# configs/p34_metadata_constraints.yaml
+# Phase 3.4 Hard Metadata-Aware Retrieval Constraints Configuration
+
+canonical_courts:
+  "Supreme Court of India":
+    - "supreme court"
+    - "supreme court of india"
+    - "apex court"
+    - "sc"
+    - "sci"
+  "High Court of Kerala":
+    - "kerala high court"
+    - "high court of kerala"
+    - "kerala hc"
+  "Madras High Court":
+    - "madras high court"
+    - "high court of madras"
+    - "madras hc"
+    - "chennai high court"
+  "Orissa High Court":
+    - "orissa high court"
+    - "high court of orissa"
+    - "orissa hc"
+    - "odisha high court"
+    - "high court of odisha"
+  "High Court of Madhya Pradesh":
+    - "madhya pradesh high court"
+    - "high court of madhya pradesh"
+    - "mp high court"
+    - "mp hc"
+  "Patna High Court":
+    - "patna high court"
+    - "high court of patna"
+    - "patna hc"
+
+canonical_source_types:
+  "judgment":
+    - "judgment"
+    - "judgments"
+    - "case law"
+    - "precedent"
+    - "precedents"
+    - "court ruling"
+    - "court rulings"
+    - "verdict"
+    - "verdicts"
+  "legislation":
+    - "act"
+    - "acts"
+    - "statute"
+    - "statutes"
+    - "bare act"
+    - "legislation"
+    - "enactment"
+    - "statutory provision"
+    - "statutory provisions"
+
+canonical_jurisdictions:
+  "central":
+    - "central law"
+    - "central act"
+    - "central legislation"
+    - "union law"
+    - "federal law"
+  "state":
+    - "state law"
+    - "state act"
+    - "state legislation"
+    - "state rules"
+
+extractor_rules:
+  require_explicit_token: true
+  min_term_length: 2

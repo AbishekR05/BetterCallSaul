@@ -41,7 +41,7 @@ class HybridAdapter:
     def retrieve(self, query: str, top_k: int = 10, filters: Optional[Any] = None) -> List[ScoredChunk]:
         # 1. Retrieve candidates from Dense & Lexical backends
         dense_chunks = self.dense_adapter.retrieve(query, top_k=self.candidate_k, filters=filters)
-        lexical_chunks = self.lexical_searcher.search(query, top_k=self.candidate_k)
+        lexical_chunks = self.lexical_searcher.search(query, top_k=self.candidate_k, filters=filters)
 
         # 2. Merge into candidate pool
         pool = CandidatePool()

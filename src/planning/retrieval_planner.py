@@ -12,18 +12,24 @@ from typing import Dict, Any, Optional
 from src.planning.schemas import (
     LegalQuestionIntent, IntentClassificationResult, RetrievalPlan
 )
+from src.planning.constraint_extractor import ConstraintExtractor
 
 
 class RetrievalPlanner:
     """
     Pure deterministic planner mapping (intent, domain_hint, jurisdiction_hint) -> RetrievalPlan.
-    No LLM call; relies on YAML intent mappings.
+    No LLM call; relies on YAML intent mappings and deterministic constraint extraction (§4, §5).
     """
-    def __init__(self, config_path: str = "configs/p33_retrieval_planning.yaml"):
+    def __init__(
+        self,
+        config_path: str = "configs/p33_retrieval_planning.yaml",
+        constraint_extractor: Optional[ConstraintExtractor] = None
+    ):
         self.config_path = Path(config_path)
         self.config = self._load_config()
         self.intent_mappings = self.config.get("intent_mappings", {})
         self.fallback_intent = self.config.get("fallback_intent", "mixed")
+        self.constraint_extractor = constraint_extractor or ConstraintExtractor()
 
     def _load_config(self) -> Dict[str, Any]:
         if self.config_path.exists():
@@ -51,7 +57,10 @@ class RetrievalPlanner:
         requires_clarification = mapping.get("requires_clarification", False)
         clarification_prompt = mapping.get("clarification_prompt")
 
-        # Query expansion / variants if statutory or case_law
+        # Deterministically extract explicit hard constraints from query
+        hard_constraints = self.constraint_extractor.extract(query)
+
+        # Query expansion / variants
         query_variants = [query]
         
         # Build RetrievalPlan
@@ -62,6 +71,8 @@ class RetrievalPlanner:
             top_k_hints=top_k_hints,
             domain_filter=classification.domain_hint,
             jurisdiction_filter=classification.jurisdiction_hint,
+            hard_constraints=hard_constraints,
             requires_clarification=requires_clarification,
             clarification_prompt=clarification_prompt
         )
+

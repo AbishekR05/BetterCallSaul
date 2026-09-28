@@ -40,38 +40,53 @@ class LexicalSearcher:
         terms = [t for t in tokens if t.lower() not in STOP_WORDS and len(t) >= 2]
         return terms[:8]  # Take top 8 most salient terms
 
-    def search(self, query: str, top_k: int = 30) -> List[ScoredChunk]:
+    def search(self, query: str, top_k: int = 30, filters: Optional[Any] = None) -> List[ScoredChunk]:
         """
-        Execute sub-20ms lexical search over chunks.text.
+        Execute sub-20ms lexical search over chunks.text with optional metadata filtering.
 
         Args:
             query: Plain text search query
             top_k: Number of top lexical results to retrieve
+            filters: Optional RetrievalFilters object
 
         Returns:
             List of ScoredChunk objects ranked by BM25 ts_rank_cd score.
         """
+        from src.retrieval.filters import build_sql_where_clause
+
         salient_terms = self.extract_salient_terms(query)
         if not salient_terms:
             return []
+
+        where_sql, filter_params = build_sql_where_clause(filters)
 
         scored_chunks: List[ScoredChunk] = []
 
         conn = get_connection(autocommit=True)
         try:
             with conn.cursor() as cur:
-                # Stage 1: Fast ILIKE candidate selection
-                like_clauses = " OR ".join(["text ILIKE %s" for _ in salient_terms])
+                # Stage 1: Fast ILIKE candidate selection with metadata filter support
+                like_clauses = " OR ".join(["c.text ILIKE %s" for _ in salient_terms])
                 params = [f"%{term}%" for term in salient_terms]
-                
+
+                if where_sql:
+                    # Strip leading ' WHERE ' from build_sql_where_clause if present
+                    clean_where = where_sql.replace(" WHERE ", "").strip()
+                    full_where = f"WHERE ({like_clauses}) AND ({clean_where})"
+                    stage1_params = params + filter_params
+                else:
+                    full_where = f"WHERE {like_clauses}"
+                    stage1_params = params
+
                 # Combine salient terms for tsquery scoring
                 ts_query_str = " | ".join(salient_terms)
 
                 query_sql = f"""
                     WITH candidates AS (
-                        SELECT chunk_id, document_id, text
-                        FROM chunks
-                        WHERE {like_clauses}
+                        SELECT c.chunk_id, c.document_id, c.text, d.court, d.jurisdiction
+                        FROM chunks c
+                        JOIN source_documents d ON c.document_id = d.document_id
+                        {full_where}
                         LIMIT 500
                     ),
                     q AS (
@@ -81,17 +96,19 @@ class LexicalSearcher:
                         c.chunk_id,
                         c.document_id,
                         c.text,
-                        COALESCE(ts_rank_cd(to_tsvector(%s, c.text), q.query, 32), 0.1) AS rank_score
+                        COALESCE(ts_rank_cd(to_tsvector(%s, c.text), q.query, 32), 0.1) AS rank_score,
+                        c.court,
+                        c.jurisdiction
                     FROM candidates c, q
                     ORDER BY rank_score DESC
                     LIMIT %s;
                 """
-                exec_params = params + [self.language, ts_query_str, self.language, top_k]
+                exec_params = stage1_params + [self.language, ts_query_str, self.language, top_k]
                 cur.execute(query_sql, exec_params)
                 rows = cur.fetchall()
 
                 for row in rows:
-                    chunk_id, doc_id, text, rank_score = row
+                    chunk_id, doc_id, text, rank_score, court, jur = row[:6]
                     scored_chunks.append(
                         ScoredChunk(
                             chunk_id=chunk_id,
@@ -100,10 +117,12 @@ class LexicalSearcher:
                             similarity_score=float(rank_score),
                             confidence_tier="high" if rank_score > 0.05 else "low",
                             match_type="lexical_fts",
-                            provenance={"backend": "lexical_fts", "ts_rank": float(rank_score)}
+                            provenance={"backend": "lexical_fts", "ts_rank": float(rank_score)},
+                            metadata={"court": court, "jurisdiction": jur}
                         )
                     )
         finally:
             conn.close()
 
         return scored_chunks
+

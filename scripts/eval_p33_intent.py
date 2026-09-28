@@ -6,11 +6,14 @@ verifies target query case fixes (murder/BNS 103), checks clarification path,
 and runs Phase 2.4/2.5 regression benchmarks.
 """
 
+import sys
 import os
 import json
 import time
 from pathlib import Path
 from typing import List, Dict, Any
+
+sys.path.insert(0, os.path.abspath('.'))
 
 from src.planning.schemas import LegalQuestionIntent
 from src.planning.intent_classifier import LLMIntentClassifier
